@@ -51,48 +51,52 @@
         .gauge-water { transition: height 1.2s ease-in-out, y 1.2s ease-in-out; fill: url(#waterGradient); }
         .stat-box { border-radius: 12px; border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); background-color: white; }
         
-        /* 列印專用樣式修正 */
+        /* 列印專用樣式修正：橫式與三頁結構 */
         @media print {
-            body { background-color: white !important; font-size: 14px; }
-            .main-container { border: none !important; box-shadow: none !important; max-width: 100% !important; overflow: visible !important; }
+            @page { size: landscape; margin: 10mm; }
+            body { background-color: white !important; font-size: 13px; }
+            .main-container { border: none !important; box-shadow: none !important; max-width: 100% !important; overflow: visible !important; width: 100% !important; }
             .tab-btn, button, .no-print, nav, .tab-navigation { display: none !important; }
             
-            /* 強制顯示所有被 hidden 的階段 */
+            /* 讓每個階段成為獨立的一頁 */
             #stage1, #stage2, #stage3 { 
-                display: block !important; 
+                display: flex !important; 
+                flex-direction: row !important;
+                width: 100% !important;
+                height: 170mm !important; /* 約略橫式 A4扣除邊距高度 */
                 opacity: 1 !important; 
                 visibility: visible !important; 
                 position: relative !important; 
                 border: none !important; 
                 background: transparent !important; 
-                overflow: visible !important;
-                page-break-after: auto;
+                page-break-after: always !important; 
+                padding: 10px 0;
             }
-            #stage3 { page-break-before: always; } /* 第三階段自動跳頁 */
+            #stage3 { page-break-after: auto !important; background-color: #f0faf7 !important; -webkit-print-color-adjust: exact; }
             
-            .stat-box { border: 1px solid #ddd !important; break-inside: avoid; }
-            .planning-card { border: 1px solid #eee !important; break-inside: avoid; margin-bottom: 12px; }
+            .stat-box { border: 1px solid #ddd !important; }
+            .planning-card { border: 1px solid #eee !important; break-inside: avoid; }
             .input-box, .underline-input { border: none !important; background: transparent !important; padding: 0 !important; color: black !important; font-weight: bold; }
-            .section-header { border-left-width: 6px !important; margin-top: 25px; border-left-color: var(--bli-green) !important; }
-            #printHeader { display: block !important; }
+            .section-header { border-left-width: 6px !important; margin-top: 10px; border-left-color: var(--bli-green) !important; }
+            #printHeader { display: block !important; border-bottom: 2px solid var(--bli-green); padding-bottom: 10px; margin-bottom: 20px; }
             
-            /* 列印時移除捲軸容器限制 */
-            .overflow-y-auto { overflow: visible !important; max-height: none !important; }
-            .flex { display: flex !important; flex-wrap: wrap; }
-            .lg\:w-1\/2 { width: 100% !important; flex: 0 0 100% !important; }
+            /* 強制列印背景色（針對 Chrome/Safari） */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+            .lg\:w-1\/2 { width: 50% !important; flex: 0 0 50% !important; }
+            .flex-col { flex-direction: row !important; }
             
-            /* 修正 T 字帳列印透明度 */
-            #selfPrepContent, #altWayContent { opacity: 1 !important; visibility: visible !important; }
+            /* T 字帳列印展開 */
+            #selfPrepContent, #altWayContent { opacity: 1 !important; visibility: visible !important; width: 50% !important; }
         }
         #printHeader { display: none; }
     </style>
 </head>
 <body class="p-2 md:p-3">
 
-    <div id="printHeader" class="text-center mb-8">
+    <div id="printHeader" class="text-center no-screen">
         <h1 class="text-3xl font-bold text-bli-green">個人退休金整合規劃報告書</h1>
-        <p class="text-gray-500 mt-2 text-base">試算日期：<span id="printDate"></span></p>
-        <hr class="mt-4 border-bli-green">
+        <p class="text-gray-500 mt-1 text-base">規劃日期：<span id="printDate"></span></p>
     </div>
 
     <div class="main-container rounded shadow-lg overflow-hidden min-h-[600px]">
@@ -109,10 +113,10 @@
             <button id="tab3" onclick="switchToStage3()" class="tab-btn">3. 預算規劃</button>
         </div>
 
-        <!-- 第一階段：現狀試算 -->
+        <!-- 第一階段：現狀試算 (第一頁) -->
         <div id="stage1" class="flex flex-col lg:flex-row fade-in">
             <div class="lg:w-1/2 p-4 border-r border-gray-200 bg-gray-50">
-                <div class="section-header">資料輸入</div>
+                <div class="section-header">資料輸入 (Step 1)</div>
                 <div class="space-y-3">
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="label-text">出生年度 (民國)：</label><input type="number" id="birthYear" placeholder="例: 67" class="input-box"></div>
@@ -165,15 +169,15 @@
             </div>
         </div>
 
-        <!-- 第二階段：深度規劃 -->
+        <!-- 第二階段：深度規劃 (第二頁) -->
         <div id="stage2" class="hidden flex flex-col lg:flex-row fade-in">
             <div class="lg:w-1/2 p-2 md:p-3 border-r border-gray-100 bg-slate-50 overflow-y-auto max-h-[680px]">
                 <div class="mb-3 text-center">
-                    <h2 class="text-sm font-bold text-slate-800 leading-snug">如果您想要在 <span id="imgRetireAge" class="text-bli-green font-black text-2xl border-b-2 border-bli-green px-2 mx-1">OO</span> 歲退休，我們需要了解這三件事：</h2>
+                    <h2 class="text-sm font-bold text-slate-800 leading-snug">退休目標：在 <span id="imgRetireAge" class="text-bli-green font-black text-2xl border-b-2 border-bli-green px-2 mx-1">OO</span> 歲如期退休</h2>
                 </div>
                 <div class="space-y-1.5">
                     <div class="planning-card border-l-4 border-l-red-600">
-                        <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">退休後我需要多少錢？ (需求)</h3>
+                        <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">需求：退休後我需要多少錢？</h3>
                         <ul class="space-y-1.5 font-bold text-slate-700">
                             <li class="flex items-center justify-between"><span>● 每個月的食衣住行費用</span><div class="flex items-center gap-1"><input type="number" id="monthlyLiving" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                             <li class="flex items-center justify-between"><span>● 退休後未償貸款</span><div class="flex items-center gap-1"><input type="number" id="loans" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
@@ -184,16 +188,16 @@
                         <div class="mt-1 pt-1 border-t border-red-50 font-black flex items-center justify-between text-slate-900"><span class="text-[10px] opacity-60">>> 以平均餘命至 85 歲計算</span><span class="text-sm">總需準備 <span id="totalDemand" class="text-red-600 text-2xl mx-1">????</span> 萬</span></div>
                     </div>
                     <div class="planning-card border-l-4 border-l-blue-700">
-                        <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">現在我已經準備了多少？ (現有)</h3>
+                        <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">現有：現在我已經準備了多少？</h3>
                         <ul class="space-y-1.5 font-bold text-slate-700">
-                            <li>● 勞保年金每月 <span id="imgLaboMonthly" class="text-blue-800 font-black text-base">OOO</span> <span class="text-[10px] font-normal opacity-50 ml-1">(至85歲共 <span id="imgLaboTotal" class="underline">?</span> 元)</span></li>
-                            <li>● 勞退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span> <span class="text-[10px] font-normal opacity-50 ml-1">(至85歲共 <span id="imgPensionTotal" class="underline">?</span> 元)</span></li>
-                            <li class="flex items-center justify-between"><span>● 其他已自己準備 <span class="text-[9px] font-normal block opacity-50">(現金/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                            <li>● 勞保年金每月 <span id="imgLaboMonthly" class="text-blue-800 font-black text-base">OOO</span></li>
+                            <li>● 勞退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span></li>
+                            <li class="flex items-center justify-between"><span>● 其他已準備 <span class="text-[9px] font-normal block opacity-50">(存款/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                         </ul>
                         <div class="mt-1 pt-1 border-t border-blue-50 font-black flex items-center justify-between text-slate-900"><span class="text-[10px] opacity-60">>> 以平均餘命至 85 歲計算</span><span class="text-sm">現在已準備 <span id="totalExisting" class="text-blue-700 text-2xl mx-1">????</span> 萬</span></div>
                     </div>
                     <div class="planning-card bg-orange-50/50 border-l-4 border-l-orange-500">
-                        <h3 class="text-base font-black text-red-600 mb-1 italic underline underline-offset-4">我還需要準備多少？需要多久？ (缺口)</h3>
+                        <h3 class="text-base font-black text-red-600 mb-1 italic underline underline-offset-4">缺口：我還需要準備多少？</h3>
                         <div class="space-y-1.5">
                             <p class="font-black text-slate-800 flex items-center justify-between"><span class="text-[12px]">● 退休金總需準備缺口：</span><span id="totalGapLeft" class="text-orange-600 text-2xl">????? 萬</span></p>
                             <div class="flex items-center justify-between font-black text-slate-800">
@@ -250,7 +254,7 @@
             </div>
         </div>
 
-        <!-- 第三階段：預算探討 -->
+        <!-- 第三階段：預算探討 (第三頁) -->
         <div id="stage3" class="hidden flex flex-col lg:flex-row fade-in bg-[#f0faf7]">
             <!-- 左側：情境對話 -->
             <div class="lg:w-1/2 p-6 md:p-8 border-r border-gray-100 flex flex-col justify-center items-center text-center">
@@ -311,13 +315,13 @@
         </div>
     </div>
 
-    <!-- 底部簽名區（僅列印顯示） -->
-    <div class="hidden print:block mt-12 px-10">
+    <!-- 底部簽名區（僅列印顯示，放在第三頁最下方） -->
+    <div class="hidden print:block mt-6 px-10">
         <div class="flex justify-between items-end">
             <div class="w-1/3 border-b border-black pb-2 text-sm">規劃顧問簽名：</div>
             <div class="w-1/3 border-b border-black pb-2 text-sm text-right">客戶確認簽名：</div>
         </div>
-        <p class="mt-4 text-[10px] text-gray-400 text-center">本報告試算結果係依據現行法令及輸入數據推估，實際領取金額以各機關正式核定為準。</p>
+        <p class="mt-4 text-[9px] text-gray-400 text-center">本報告試算結果係依據現行法令及輸入數據推估，實際領取金額以各機關正式核定為準。規劃結果僅供參考，不代表未來必然之收益。</p>
     </div>
 
     <script>
@@ -470,20 +474,18 @@
                 updatePlanningLogic();
                 updateStage3Visuals();
                 
-                // 2. 暫時強制展開 T 字帳內容以便列印
+                // 2. 暫時展開隱藏內容以便完整列印
                 const selfPrep = document.getElementById('selfPrepContent');
                 const altWay = document.getElementById('altWayContent');
                 if (selfPrep) selfPrep.style.opacity = '1';
                 if (altWay) altWay.style.opacity = '1';
 
-                // 3. 呼叫列印（延遲 100ms 確保 DOM 完成更新）
+                // 3. 呼叫列印
                 setTimeout(() => {
                     window.print();
-                    // 列印後恢復 T 字帳原本的互動狀態（視需要）
-                }, 150);
+                }, 200);
             } catch (err) {
-                alert("產生報告書時發生錯誤，請重新整理頁面再試。");
-                console.error(err);
+                alert("產生報告書時發生錯誤。");
             }
         }
 
