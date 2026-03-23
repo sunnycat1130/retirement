@@ -595,7 +595,21 @@
 
             <!-- 勞退月退休金 -->
             <div class="rpt-section-title">勞工退休金試算</div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+
+            <!-- 1. 勞退專戶累積金額（置頂） -->
+            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:8px;padding:10px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <div style="font-size:9px;font-weight:800;color:#00847b;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">勞退個人專戶累積金額</div>
+                    <div style="font-size:9px;color:#64748b;line-height:1.6;">此金額經年金化計算後，可領至 84 歲為止</div>
+                </div>
+                <div style="text-align:right;">
+                    <div style="font-size:26px;font-weight:900;color:#00847b;letter-spacing:-1px;" id="rpt-fund">--</div>
+                    <div style="font-size:10px;font-weight:700;color:#64748b;">元</div>
+                </div>
+            </div>
+
+            <!-- 2. 月退休金 & 季發金額 -->
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
                 <div class="rpt-result-block green-bg" style="display:flex;flex-direction:column;justify-content:center;padding:16px 18px;">
                     <div class="rpt-result-block-title">月退休金（預估）</div>
                     <div style="display:flex;align-items:baseline;gap:4px;">
@@ -614,16 +628,12 @@
                 </div>
             </div>
 
-            <!-- 小結說明 -->
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;display:flex;gap:20px;align-items:center;">
-                <div style="flex:1;font-size:10px;color:#475569;line-height:1.7;">
+            <!-- 3. 試算說明（置底） -->
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;">
+                <div style="font-size:10px;color:#475569;line-height:1.7;">
                     <strong style="color:#00847b;">試算說明：</strong>本頁試算結果係依據現行勞工保險條例及輸入數據推估，
                     實際領取金額以勞動部勞工保險局正式核定為準。年金給付採第一式與第二式擇優發給。
-                </div>
-                <div style="text-align:center;flex-shrink:0;">
-                    <div style="font-size:9px;color:#94a3b8;font-weight:700;margin-bottom:4px;">勞退專戶累積金額</div>
-                    <div style="font-size:18px;font-weight:900;color:#1e293b;" id="rpt-fund">--</div>
-                    <div style="font-size:9px;color:#94a3b8;">元</div>
+                    勞退月退休金係依個人專戶累積金額除以平均餘命係數計算，給付至 84 歲為止。
                 </div>
             </div>
         </div>
@@ -716,7 +726,7 @@
                             <span class="rpt-demand-item-val" style="color:#1d4ed8;"><span id="rpt-e-labo">0</span> 元</span>
                         </div>
                         <div class="rpt-demand-item">
-                            <span class="rpt-demand-item-label">● 勞退退休金（月）</span>
+                            <span class="rpt-demand-item-label">● 勞退退休金（季）</span>
                             <span class="rpt-demand-item-val" style="color:#1d4ed8;"><span id="rpt-e-pension">0</span> 元</span>
                         </div>
                         <div class="rpt-demand-item">
@@ -738,7 +748,7 @@
             <!-- 達成進度條 -->
             <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:14px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-size:11px;font-weight:800;color:#475569;">退休準備達成率</span>
+                    <span style="font-size:11px;font-weight:800;color:#475569;">目前退休準備達成率</span>
                     <span style="font-size:16px;font-weight:900;color:#00847b;" id="rpt-progress-pct">0%</span>
                 </div>
                 <div class="rpt-progress-bar-wrap">
@@ -756,12 +766,14 @@
                     <div class="rpt-plan-card-title">📦 方案一：自行儲蓄準備</div>
                     <div class="rpt-plan-row"><span class="rpt-plan-row-label">準備年數</span><span class="rpt-plan-row-val"><span id="rpt-plan-years">0</span> 年</span></div>
                     <div class="rpt-plan-row"><span class="rpt-plan-row-label">每年需累積</span><span class="rpt-plan-row-val"><span id="rpt-plan-yearly">0</span> 萬</span></div>
-                    <div class="rpt-plan-row" style="margin-top:6px;padding-top:6px;border-top:1px dashed #e2e8f0;"><span class="rpt-plan-row-label" style="font-weight:800;">每月須存入</span><span class="rpt-plan-row-val" style="font-size:16px;color:#dc2626;"><span id="rpt-plan-monthly">0</span> 萬</span></div>
+                    <div class="rpt-plan-row" style="margin-top:6px;padding-top:6px;border-top:1px dashed #e2e8f0;"><span class="rpt-plan-row-label" style="font-weight:800;">每月須準備</span><span class="rpt-plan-row-val" style="font-size:16px;color:#dc2626;"><span id="rpt-plan-monthly">0</span> 萬</span></div>
                 </div>
                 <div class="rpt-plan-card alt">
                     <div class="rpt-plan-card-title">💡 方案二：專業規劃方式</div>
                     <div class="rpt-plan-row"><span class="rpt-plan-row-label">準備年數</span><span class="rpt-plan-row-val"><span id="rpt-alt-years">0</span> 年</span></div>
-                    <div class="rpt-plan-row"><span class="rpt-plan-row-label">每月只需提撥</span><span class="rpt-plan-row-val" style="color:#1d4ed8;font-size:14px;"><span id="rpt-alt-monthly">0</span> 萬</span></div>
+                    <div class="rpt-plan-row" style="margin-top:6px;padding-top:6px;border-top:1px dashed #bfdbfe;">
+                        <span class="rpt-plan-row-label" style="font-weight:800;color:#1d4ed8;">每月準備金額低於 <span id="rpt-alt-monthly-ref" style="font-size:13px;font-weight:900;">0</span> 萬</span>
+                    </div>
                     <div style="margin-top:8px;background:rgba(29,78,216,0.08);border-radius:6px;padding:6px 8px;font-size:9px;color:#1d4ed8;font-weight:700;line-height:1.6;">
                         ✓ 每月準備金額更少<br>✓ 發生意外不影響計劃<br>✓ 留愛給家人
                     </div>
@@ -831,6 +843,7 @@
 
                 <!-- 數字卡片 -->
                 <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+                    <!-- 1. 退休總需求 -->
                     <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
                         <div>
                             <div style="font-size:9px;font-weight:800;color:#dc2626;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">退休總需求 TARGET</div>
@@ -838,6 +851,21 @@
                         </div>
                         <div style="font-size:13px;font-weight:700;color:#fca5a5;">萬元</div>
                     </div>
+                    <!-- 2. 尚有缺口（強化凸顯） -->
+                    <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2.5px solid #f97316;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 14px rgba(249,115,22,0.22);">
+                        <div>
+                            <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
+                                <span style="font-size:9px;font-weight:800;color:#c2410c;letter-spacing:1px;text-transform:uppercase;">尚有缺口 GAP</span>
+                                <span style="background:#f97316;color:white;font-size:8px;font-weight:900;padding:1px 7px;border-radius:100px;letter-spacing:0.5px;">需補足</span>
+                            </div>
+                            <div style="font-size:30px;font-weight:900;color:#c2410c;letter-spacing:-1px;" id="rpt-p3-gap">0</div>
+                        </div>
+                        <div style="text-align:right;">
+                            <div style="font-size:15px;font-weight:800;color:#f97316;">萬元</div>
+                            <div style="font-size:8px;color:#fb923c;margin-top:4px;font-weight:600;">← 需要補足的金額</div>
+                        </div>
+                    </div>
+                    <!-- 3. 目前已準備 -->
                     <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
                         <div>
                             <div style="font-size:9px;font-weight:800;color:#1d4ed8;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">目前已準備 CURRENT</div>
@@ -845,17 +873,10 @@
                         </div>
                         <div style="font-size:13px;font-weight:700;color:#93c5fd;">萬元</div>
                     </div>
-                    <div style="background:#fff7ed;border:1px dashed #fed7aa;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
-                        <div>
-                            <div style="font-size:9px;font-weight:800;color:#ea580c;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">尚有缺口 GAP</div>
-                            <div style="font-size:22px;font-weight:900;color:#ea580c;" id="rpt-p3-gap">0</div>
-                        </div>
-                        <div style="font-size:13px;font-weight:700;color:#fdba74;">萬元</div>
-                    </div>
                     <!-- 達成率進度 -->
                     <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;">
                         <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
-                            <span style="font-size:10px;font-weight:700;color:#475569;">退休準備達成率</span>
+                            <span style="font-size:10px;font-weight:700;color:#475569;">目前退休準備達成率</span>
                             <span style="font-size:14px;font-weight:900;color:#00847b;" id="rpt-p3-pct">0%</span>
                         </div>
                         <div style="background:#f1f5f9;border-radius:100px;height:8px;overflow:hidden;">
@@ -1086,7 +1107,7 @@
         setText('rpt-d-other', stage2Data.otherN || 0);
         setText('rpt-d-total', need.toLocaleString());
         setText('rpt-e-labo', dataFromStage1.laboMonthly.toLocaleString());
-        setText('rpt-e-pension', dataFromStage1.pensionMonthly.toLocaleString());
+        setText('rpt-e-pension', (dataFromStage1.pensionMonthly * 3).toLocaleString());
         setText('rpt-e-gov-total', (stage2Data.govTotal || 0).toLocaleString());
         setText('rpt-e-personal', (stage2Data.personal || 0).toLocaleString());
         setText('rpt-e-total', existing.toLocaleString());
@@ -1100,7 +1121,7 @@
         setText('rpt-plan-yearly', yearlyVal);
         setText('rpt-plan-monthly', monthlyVal);
         setText('rpt-alt-years', prepY);
-        setText('rpt-alt-monthly', monthlyVal);
+        setText('rpt-alt-monthly-ref', monthlyVal);
 
         // 第三頁
         const budget = document.getElementById('finalBudgetChoice').value || '0';
