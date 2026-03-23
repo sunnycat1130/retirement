@@ -63,14 +63,14 @@
                 display: flex !important; 
                 flex-direction: row !important;
                 width: 100% !important;
-                height: 170mm !important; /* 約略橫式 A4扣除邊距高度 */
+                min-height: 160mm !important; 
                 opacity: 1 !important; 
                 visibility: visible !important; 
                 position: relative !important; 
                 border: none !important; 
                 background: transparent !important; 
                 page-break-after: always !important; 
-                padding: 10px 0;
+                padding: 15px 0;
             }
             #stage3 { page-break-after: auto !important; background-color: #f0faf7 !important; -webkit-print-color-adjust: exact; }
             
@@ -81,13 +81,19 @@
             #printHeader { display: block !important; border-bottom: 2px solid var(--bli-green); padding-bottom: 10px; margin-bottom: 20px; }
             
             /* 強制列印背景色（針對 Chrome/Safari） */
-            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; transition: none !important; }
 
             .lg\:w-1\/2 { width: 50% !important; flex: 0 0 50% !important; }
             .flex-col { flex-direction: row !important; }
             
-            /* T 字帳列印展開 */
-            #selfPrepContent, #altWayContent { opacity: 1 !important; visibility: visible !important; width: 50% !important; }
+            /* T 字帳列印修正佈局 - 移除絕對定位改用邊框 */
+            .t-divider-v { display: none !important; }
+            #selfPrepContent { opacity: 1 !important; visibility: visible !important; width: 50% !important; border-right: 2px solid #1e293b !important; }
+            #altWayContent { opacity: 1 !important; visibility: visible !important; width: 50% !important; background-color: #f1f5f9 !important; }
+            
+            /* 修正第二頁右側文字重疊 */
+            .t-divider-h { margin-bottom: 15px !important; }
+            #stage2 .lg\:w-1\/2:last-child { padding-left: 20px !important; }
         }
         #printHeader { display: none; }
     </style>
@@ -137,7 +143,7 @@
                         </div>
                         <div class="flex gap-3 pt-2 mt-2 border-t text-xs font-bold"><span>總年資： <span id="dispTotalY" class="text-bli-green">0</span> 年 <span id="dispTotalM" class="text-bli-green">0</span> 月</span><input type="hidden" id="totalYears"><input type="hidden" id="totalMonths"></div>
                     </div>
-                    <div><label class="label-text font-bold">勞退個人專戶累積本金及收益：</label><input type="number" id="pensionFund" placeholder="請輸入金額(元)" class="input-box border-bli-orange"></div>
+                    <div><label class="label-text font-bold">勞退個人專戶累積金額：</label><input type="number" id="pensionFund" placeholder="請輸入金額(元)" class="input-box border-bli-orange"></div>
                     <div class="flex gap-3 pt-2 no-print"><button onclick="performCalculation()" class="flex-1 bg-bli-orange text-white py-2.5 rounded-lg font-bold hover:brightness-110 shadow-md transition-all">開始試算</button><button onclick="resetAll()" class="w-1/4 bg-gray-400 text-white py-2.5 rounded-lg font-bold hover:bg-gray-500 shadow-md">全部清除</button></div>
                 </div>
             </div>
