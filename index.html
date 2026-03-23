@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>勞工保險及退休金整合規劃系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --bli-green: #00847b;
+            --bli-light-green: #f0faf7; 
+            --bli-orange: #d33101;
+            --bli-input-bg: #e5eef0;
+            --bli-result-bg: #e9ecef;
+            --demand-red: #dc2626;
+            --existing-blue: #1d4ed8;
+            --gap-orange: #ea580c;
+        }
+        /* 全域設置 */
+        body { background-color: #f8fafc; color: #333; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 12px; line-height: 1.4; }
+        .main-container { border: 1px solid var(--bli-green); background-color: white; max-width: 1280px; margin: auto; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .text-bli-green { color: var(--bli-green); }
+        .bg-bli-green { background-color: var(--bli-green); }
+        .bg-bli-orange { background-color: var(--bli-orange); }
+        
+        .input-box { background-color: var(--bli-input-bg); border: 1px solid #ccd6d8; padding: 3px 6px; width: 100%; border-radius: 4px; font-size: 12px; }
+        .input-box:focus { background-color: white; border-color: var(--bli-green); outline: none; }
+        .result-box { background-color: var(--bli-result-bg); border: 1px solid #ced4da; padding: 4px; font-weight: bold; border-radius: 4px; }
+        
+        .section-header { border-left: 4px solid var(--bli-green); padding-left: 8px; margin-bottom: 0.75rem; color: var(--bli-green); font-weight: bold; font-size: 1rem; }
+        .label-text { font-size: 0.75rem; font-weight: 500; color: #444; margin-bottom: 1px; display: block; }
+        
+        .winner-tag, .info-tag { display: none; color: white; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; margin-left: 5px; font-weight: bold; }
+        .is-winner .winner-tag { display: inline-block; background-color: var(--bli-green); }
+        .is-quarterly .info-tag { display: inline-block; background-color: var(--bli-orange); }
+
+        .tab-btn { padding: 10px 20px; font-weight: bold; color: #666; border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 13px; }
+        .tab-btn.active { color: var(--bli-green); border-bottom: 3px solid var(--bli-green); background-color: rgba(0, 132, 123, 0.05); }
+
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .planning-card { border-radius: 10px; padding: 0.6rem 0.9rem; background: white; border: 1px solid #e2e8f0; transition: all 0.3s; }
+        .planning-card:hover { border-color: #cbd5e1; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .underline-input { border-bottom: 2px solid #334155; transition: all 0.2s; font-weight: 900; }
+        .underline-input:focus { border-color: var(--bli-green); outline: none; color: var(--bli-green); }
+        .t-divider-h { height: 3px; background: #1e293b; width: 100%; border-radius: 2px; }
+        .t-divider-v { width: 3px; background: #1e293b; height: 100%; border-radius: 2px; }
+        .alt-btn-style { color: var(--existing-blue); border-bottom: 2px dashed var(--existing-blue); font-weight: 900; transition: all 0.2s; cursor: pointer; }
+
+        .gauge-water { transition: height 1.2s ease-in-out, y 1.2s ease-in-out; fill: url(#waterGradient); }
+        .stat-box { border-radius: 12px; border: 1px solid #e2e8f0; padding: 8px 12px; text-align: left; transition: all 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); background-color: white; }
+        
+        /* 列印專用樣式修正 */
+        @media print {
+            body { background-color: white !important; font-size: 14px; }
+            .main-container { border: none !important; box-shadow: none !important; max-width: 100% !important; overflow: visible !important; }
+            .tab-btn, button, .no-print, nav, .tab-navigation { display: none !important; }
+            
+            /* 強制顯示所有被 hidden 的階段 */
+            #stage1, #stage2, #stage3 { 
+                display: block !important; 
+                opacity: 1 !important; 
+                visibility: visible !important; 
+                position: relative !important; 
+                border: none !important; 
+                background: transparent !important; 
+                overflow: visible !important;
+                page-break-after: auto;
+            }
+            #stage3 { page-break-before: always; } /* 第三階段自動跳頁 */
+            
+            .stat-box { border: 1px solid #ddd !important; break-inside: avoid; }
+            .planning-card { border: 1px solid #eee !important; break-inside: avoid; margin-bottom: 12px; }
+            .input-box, .underline-input { border: none !important; background: transparent !important; padding: 0 !important; color: black !important; font-weight: bold; }
+            .section-header { border-left-width: 6px !important; margin-top: 25px; border-left-color: var(--bli-green) !important; }
+            #printHeader { display: block !important; }
+            
+            /* 列印時移除捲軸容器限制 */
+            .overflow-y-auto { overflow: visible !important; max-height: none !important; }
+            .flex { display: flex !important; flex-wrap: wrap; }
+            .lg\:w-1\/2 { width: 100% !important; flex: 0 0 100% !important; }
+            
+            /* 修正 T 字帳列印透明度 */
+            #selfPrepContent, #altWayContent { opacity: 1 !important; visibility: visible !important; }
+        }
+        #printHeader { display: none; }
+    </style>
+</head>
+<body class="p-2 md:p-3">
+
+    <div id="printHeader" class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-bli-green">個人退休金整合規劃報告書</h1>
+        <p class="text-gray-500 mt-2 text-base">試算日期：<span id="printDate"></span></p>
+        <hr class="mt-4 border-bli-green">
+    </div>
+
+    <div class="main-container rounded shadow-lg overflow-hidden min-h-[600px]">
+        <!-- 頁首標題 -->
+        <div class="bg-bli-green p-2.5 text-white flex flex-col md:flex-row justify-between items-center md:items-end no-print">
+            <h1 class="text-lg font-bold">勞工保險及退休金整合試算與規劃系統</h1>
+            <span class="text-[10px] opacity-70 mt-0.5">※ 本系統試算結果僅供參考，實際領取金額以勞保局正式核定為準。</span>
+        </div>
+
+        <!-- 導覽標籤列 -->
+        <div class="flex border-b border-gray-200 bg-white shadow-sm relative z-10 no-print">
+            <button id="tab1" onclick="switchToStage1()" class="tab-btn active">1. 現狀試算</button>
+            <button id="tab2" onclick="switchToStage2()" class="tab-btn">2. 深度規劃</button>
+            <button id="tab3" onclick="switchToStage3()" class="tab-btn">3. 預算規劃</button>
+        </div>
+
+        <!-- 第一階段：現狀試算 -->
+        <div id="stage1" class="flex flex-col lg:flex-row fade-in">
+            <div class="lg:w-1/2 p-4 border-r border-gray-200 bg-gray-50">
+                <div class="section-header">資料輸入</div>
+                <div class="space-y-3">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="label-text">出生年度 (民國)：</label><input type="number" id="birthYear" placeholder="例: 67" class="input-box"></div>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div><label class="label-text">請領歲：</label><input type="number" id="claimAgeYear" placeholder="歲" class="input-box"></div>
+                            <div><label class="label-text">月：</label><select id="claimAgeMonth" class="input-box"><script>for(let i=0; i<=11; i++) document.write(`<option value="${i}">${i < 10 ? '0'+i : i}</option>`);</script></select></div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div><label class="label-text">前36個月平均薪資：</label><input type="number" id="avgSalary3y" placeholder="一次金用" class="input-box"></div>
+                        <div><label class="label-text">最高60個月平均薪資：</label><input type="number" id="avgSalary60m" placeholder="年金用" class="input-box"></div>
+                    </div>
+                    <div class="p-3 bg-white border border-gray-200 rounded shadow-sm">
+                        <p class="text-xs font-bold text-bli-green mb-2 border-b pb-1">參加保險年資</p>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="label-text">滿60歲前：</label><div class="flex gap-1"><input type="number" id="yearsBefore60" onchange="updateTotalSeniority()" placeholder="年" class="input-box"><select id="monthsBefore60" onchange="updateTotalSeniority()" class="input-box w-16"><script>for(let i=0; i<=11; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div></div>
+                            <div><label class="label-text">滿60歲後：</label><div class="flex gap-1"><input type="number" id="yearsAfter60" onchange="updateTotalSeniority()" placeholder="年" class="input-box"><select id="monthsAfter60" onchange="updateTotalSeniority()" class="input-box w-16"><script>for(let i=0; i<=11; i++) document.write(`<option value="${i}">${i}</option>`);</script></select></div></div>
+                        </div>
+                        <div class="flex gap-3 pt-2 mt-2 border-t text-xs font-bold"><span>總年資： <span id="dispTotalY" class="text-bli-green">0</span> 年 <span id="dispTotalM" class="text-bli-green">0</span> 月</span><input type="hidden" id="totalYears"><input type="hidden" id="totalMonths"></div>
+                    </div>
+                    <div><label class="label-text font-bold">勞退個人專戶累積本金及收益：</label><input type="number" id="pensionFund" placeholder="請輸入金額(元)" class="input-box border-bli-orange"></div>
+                    <div class="flex gap-3 pt-2 no-print"><button onclick="performCalculation()" class="flex-1 bg-bli-orange text-white py-2.5 rounded-lg font-bold hover:brightness-110 shadow-md transition-all">開始試算</button><button onclick="resetAll()" class="w-1/4 bg-gray-400 text-white py-2.5 rounded-lg font-bold hover:bg-gray-500 shadow-md">全部清除</button></div>
+                </div>
+            </div>
+            <div class="lg:w-1/2 p-4 bg-white">
+                <div class="section-header text-bli-orange border-bli-orange">試算預估結果</div>
+                <div id="placeholderMsg" class="py-24 text-center text-gray-400 font-bold no-print">📊 請於左側輸入資料後點擊「開始試算」</div>
+                <div id="realResults" class="hidden space-y-4">
+                    <div class="border rounded-lg p-3 bg-white shadow-sm">
+                        <h3 class="text-xs font-bold text-bli-green mb-2 border-b pb-1">勞工保險老年給付</h3>
+                        <div class="mb-3"><label class="label-text">可一次請領老年給付金額：</label><div id="resOnce" class="text-lg font-bold text-gray-700">--</div></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div id="formula1Container"><label class="label-text">第一式金額 <span class="winner-tag">擇優發給</span></label><div id="resFormula1" class="result-box text-blue-900 text-center text-xl">--</div></div>
+                            <div id="formula2Container"><label class="label-text">第二式金額 <span class="winner-tag">擇優發給</span></label><div id="resFormula2" class="result-box text-blue-900 text-center text-xl">--</div></div>
+                        </div>
+                    </div>
+                    <div class="border rounded-lg p-3 bg-orange-50/40 shadow-sm">
+                        <h3 class="text-xs font-bold text-bli-green mb-2 border-b pb-1">勞工退休金月退休金</h3>
+                        <div class="grid grid-cols-2 gap-3 mb-3">
+                            <div class="bg-white p-2 rounded border border-gray-100 shadow-sm"><label class="label-text text-gray-500">預計申請年齡</label><div id="resClaimAge" class="text-sm font-bold text-gray-800">--</div></div>
+                            <div class="bg-white p-2 rounded border border-gray-100 shadow-sm"><label class="label-text text-gray-500">平均餘命</label><div id="resLife" class="text-sm font-bold text-gray-800">--</div></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="label-text text-bli-green font-bold">月退休金 (預估)</label><div id="resMonthlyPension" class="result-box text-blue-800 text-center text-xl">--</div></div>
+                            <div id="quarterlyPensionContainer"><label class="label-text text-bli-green font-bold">季發金額 <span class="info-tag">每季發給</span></label><div id="resQuarterlyPension" class="result-box text-blue-800 text-center text-xl">--</div></div>
+                        </div>
+                    </div>
+                    <div class="pt-2 no-print"><button onclick="switchToStage2()" class="w-full bg-bli-orange text-white py-3 rounded-xl font-bold text-base hover:scale-[1.01] transition-transform shadow-lg flex items-center justify-center gap-2"><span>進入第二階段：退休缺口深度規劃</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第二階段：深度規劃 -->
+        <div id="stage2" class="hidden flex flex-col lg:flex-row fade-in">
+            <div class="lg:w-1/2 p-2 md:p-3 border-r border-gray-100 bg-slate-50 overflow-y-auto max-h-[680px]">
+                <div class="mb-3 text-center">
+                    <h2 class="text-sm font-bold text-slate-800 leading-snug">如果您想要在 <span id="imgRetireAge" class="text-bli-green font-black text-2xl border-b-2 border-bli-green px-2 mx-1">OO</span> 歲退休，我們需要了解這三件事：</h2>
+                </div>
+                <div class="space-y-1.5">
+                    <div class="planning-card border-l-4 border-l-red-600">
+                        <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">退休後我需要多少錢？ (需求)</h3>
+                        <ul class="space-y-1.5 font-bold text-slate-700">
+                            <li class="flex items-center justify-between"><span>● 每個月的食衣住行費用</span><div class="flex items-center gap-1"><input type="number" id="monthlyLiving" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                            <li class="flex items-center justify-between"><span>● 退休後未償貸款</span><div class="flex items-center gap-1"><input type="number" id="loans" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                            <li class="flex items-center justify-between"><span>● 緊急 / 醫療預備金</span><div class="flex items-center gap-1"><input type="number" id="medicalRes" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                            <li class="flex items-center justify-between"><span>● 旅遊 / 夢想基金</span><div class="flex items-center gap-1"><input type="number" id="dreamFund" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                            <li class="flex items-center justify-between"><span>● 其他</span><div class="flex items-center gap-1"><input type="number" id="otherNeed" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                        </ul>
+                        <div class="mt-1 pt-1 border-t border-red-50 font-black flex items-center justify-between text-slate-900"><span class="text-[10px] opacity-60">>> 以平均餘命至 85 歲計算</span><span class="text-sm">總需準備 <span id="totalDemand" class="text-red-600 text-2xl mx-1">????</span> 萬</span></div>
+                    </div>
+                    <div class="planning-card border-l-4 border-l-blue-700">
+                        <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">現在我已經準備了多少？ (現有)</h3>
+                        <ul class="space-y-1.5 font-bold text-slate-700">
+                            <li>● 勞保年金每月 <span id="imgLaboMonthly" class="text-blue-800 font-black text-base">OOO</span> <span class="text-[10px] font-normal opacity-50 ml-1">(至85歲共 <span id="imgLaboTotal" class="underline">?</span> 元)</span></li>
+                            <li>● 勞退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span> <span class="text-[10px] font-normal opacity-50 ml-1">(至85歲共 <span id="imgPensionTotal" class="underline">?</span> 元)</span></li>
+                            <li class="flex items-center justify-between"><span>● 其他已自己準備 <span class="text-[9px] font-normal block opacity-50">(現金/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                        </ul>
+                        <div class="mt-1 pt-1 border-t border-blue-50 font-black flex items-center justify-between text-slate-900"><span class="text-[10px] opacity-60">>> 以平均餘命至 85 歲計算</span><span class="text-sm">現在已準備 <span id="totalExisting" class="text-blue-700 text-2xl mx-1">????</span> 萬</span></div>
+                    </div>
+                    <div class="planning-card bg-orange-50/50 border-l-4 border-l-orange-500">
+                        <h3 class="text-base font-black text-red-600 mb-1 italic underline underline-offset-4">我還需要準備多少？需要多久？ (缺口)</h3>
+                        <div class="space-y-1.5">
+                            <p class="font-black text-slate-800 flex items-center justify-between"><span class="text-[12px]">● 退休金總需準備缺口：</span><span id="totalGapLeft" class="text-orange-600 text-2xl">????? 萬</span></p>
+                            <div class="flex items-center justify-between font-black text-slate-800">
+                                <span class="text-[12px]">● 您預計花幾年來準備這筆錢？</span>
+                                <div class="flex items-center gap-1"><input type="number" id="prepYears" oninput="updatePlanningLogic()" placeholder="0" class="w-12 underline-input text-center text-blue-700 text-xl bg-transparent"><span>年</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="lg:w-1/2 p-3 md:p-4 bg-white flex flex-col items-center">
+                <div class="w-full text-center mb-4">
+                    <p class="text-blue-800 font-black text-lg mb-3 tracking-widest uppercase underline underline-offset-8 decoration-2 no-print">需求 - 現有 = 缺口</p>
+                    <div class="inline-flex items-center gap-3 text-2xl font-black text-red-600 bg-red-50 px-6 py-2 rounded-xl shadow-inner border border-red-100"><span id="txtTotalDemand">?</span>萬 - <span id="txtTotalExisting">?</span>萬 = <span id="txtTotalGap">?</span>萬</div>
+                </div>
+                <div class="w-full flex-1 flex flex-col mt-2">
+                    <div class="grid grid-cols-2 w-full mb-1 no-print">
+                        <div class="text-center pb-3"><button onclick="toggleSelfPrep()" class="alt-btn-style text-2xl">自己準備</button></div>
+                        <div class="text-center pb-3"><button onclick="toggleAlternative()" class="alt-btn-style text-2xl">另外一種方式</button></div>
+                    </div>
+                    <div class="t-divider-h no-print"></div>
+                    <div class="flex w-full flex-1 relative min-h-[350px]">
+                        <div class="t-divider-v absolute left-1/2 -translate-x-1/2 h-full no-print"></div>
+                        <div id="selfPrepContent" class="w-1/2 px-4 py-6 opacity-0 transition-all duration-700 flex flex-col items-center space-y-6">
+                            <p class="text-lg font-black text-red-600 italic">假設花 <span id="txtPrepYears1" class="border-b-2 border-red-600 px-2 font-black">OO</span> 年準備</p>
+                            <div class="space-y-6 text-center">
+                                <div><p class="text-[10px] text-slate-400 font-bold mb-1 uppercase">每年需累積</p><p class="text-3xl font-black">1年 <span id="txtYearlySave" class="text-blue-700 mx-1">??</span> 萬</p></div>
+                                <div><p class="text-[10px] text-slate-400 font-bold mb-1 uppercase">每月需累積</p><p class="text-3xl font-black">1月 <span id="txtMonthlySave" class="text-blue-700 mx-1">?</span> 萬</p></div>
+                                <p class="text-xl font-black bg-slate-100 px-4 py-1 rounded-full shadow-sm">準備 <span id="txtPrepYears2" class="text-blue-700">??</span> 年</p>
+                            </div>
+                            <div class="pt-6 space-y-2 text-center border-t border-slate-100 w-full mt-auto"><p class="text-2xl font-black text-slate-800 tracking-wider">健康平安</p><p class="text-xl font-bold text-slate-400 italic">準備 <span id="txtPrepYears3">??</span> 年</p></div>
+                        </div>
+                        <div id="altWayContent" class="w-1/2 px-4 py-6 opacity-0 transition-all duration-700 flex flex-col space-y-6 font-black bg-blue-50/20">
+                            <ul class="space-y-3 text-base no-print"><li class="text-red-600 flex items-start gap-1">● <span class="flex-1">每月準備變少</span></li><li class="text-red-600 flex items-start gap-1">● <span class="flex-1 leading-tight text-sm">發生變化不影響計劃</span></li></ul>
+                            <div class="space-y-4 text-center pt-2">
+                                <p class="text-3xl">1月不用 <span id="txtMonthlyAlt" class="text-blue-700">?</span> 萬</p>
+                                <p class="text-xl bg-blue-100 px-4 py-0.5 rounded-full inline-block">準備 <span id="txtPrepYearsAlt1" class="text-blue-700">??</span> 年</p>
+                            </div>
+                            <div class="space-y-2 text-center pt-4 text-lg text-blue-900 border-t border-blue-100 mt-auto">
+                                <p>一樣的時間</p>
+                                <p>準備金額較少</p>
+                                <p>兼顧品質</p>
+                                <p class="text-xl pt-4 text-blue-800 font-black text-center">發生變化留愛給家人</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex w-full justify-end px-4 no-print">
+                    <button onclick="switchToStage3()" class="bg-bli-orange text-white font-black px-6 py-2 rounded-full shadow-lg flex items-center gap-2 hover:scale-105 transition-transform text-sm">
+                        <span>下一步：預算規劃討論</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第三階段：預算探討 -->
+        <div id="stage3" class="hidden flex flex-col lg:flex-row fade-in bg-[#f0faf7]">
+            <!-- 左側：情境對話 -->
+            <div class="lg:w-1/2 p-6 md:p-8 border-r border-gray-100 flex flex-col justify-center items-center text-center">
+                <div class="max-w-lg space-y-6">
+                    <div class="space-y-1">
+                        <h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">如果有這樣的方案來幫助我們</h2>
+                        <h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">準備自己的退休金</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="text-lg md:text-xl font-bold text-slate-700 leading-relaxed">請問在不影響現在生活的前題下，<br>您每個月願意提撥多少</p>
+                        <div class="flex items-center justify-center gap-3">
+                            <input type="number" id="finalBudgetChoice" oninput="updateStage3Visuals()" placeholder="0" class="w-40 text-center text-4xl font-black text-bli-green border-b-4 border-bli-green bg-transparent focus:outline-none py-1">
+                            <span class="text-3xl font-black text-slate-800">元</span>
+                        </div>
+                        <p class="text-lg md:text-xl font-bold text-slate-700">來投資自己未來的退休生活？</p>
+                    </div>
+                    <div class="space-y-3 pt-4 border-t border-emerald-100">
+                        <p class="text-lg font-bold text-slate-600 leading-relaxed">我將會根據您的想法，<br>給您建議並和您一起討論</p>
+                        <p class="text-xl md:text-2xl font-black text-bli-orange italic drop-shadow-sm">幫助您達成目標將是最棒的事情！</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右側：圓柱比例視覺 -->
+            <div class="lg:w-1/2 p-6 flex flex-col items-center justify-center relative">
+                <div class="flex items-center justify-center gap-6 w-full max-w-2xl">
+                    <div class="relative w-44 h-80 flex-shrink-0">
+                        <svg viewBox="0 0 120 300" class="w-full h-full overflow-visible">
+                            <defs>
+                                <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect x="10" y="20" width="100" height="260" rx="50" fill="#ffffff" stroke="#cbd5e1" stroke-width="2.5" opacity="0.6" />
+                            <rect id="cylWater" x="10" y="280" width="100" height="0" rx="50" class="gauge-water" />
+                            <rect x="25" y="45" width="12" height="210" rx="6" fill="#fff" opacity="0.4" />
+                            <text x="60" y="155" id="cylPercent" text-anchor="middle" font-size="24" font-weight="900" fill="#333" opacity="0.6">達成 0%</text>
+                        </svg>
+                    </div>
+                    <div class="w-56 space-y-4">
+                        <div class="stat-box bg-red-50/80 border-red-100"><p class="text-[9px] font-bold text-red-400 uppercase tracking-tighter mb-1">退休總需求 (TARGET)</p><p class="text-xl font-black text-red-600"><span id="cylFinalNeed">0</span> 萬</p></div>
+                        <div class="stat-box bg-orange-50/80 border-orange-200 border-dashed"><p class="text-[9px] font-bold text-orange-400 uppercase tracking-tighter mb-1">尚有缺口 (GAP)</p><p class="text-xl font-black text-orange-600"><span id="cylFinalGap">0</span> 萬</p></div>
+                        <div class="stat-box bg-blue-50/80 border-blue-100"><p class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter mb-1">目前已現有 (CURRENT)</p><p class="text-xl font-black text-blue-800"><span id="cylFinalExisting">0</span> 萬</p></div>
+                    </div>
+                </div>
+                <div class="mt-8 text-center w-full max-w-md no-print">
+                    <p class="text-slate-400 font-bold italic text-sm">透過合理的提撥預算，我們能填補這段距離，讓未來更安心。</p>
+                    <div class="mt-6 flex flex-col gap-3">
+                        <button id="btnPrint" onclick="generatePDF()" class="bg-bli-green text-white font-black px-8 py-3 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:scale-105 transition-all text-base border-2 border-white/20">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            <span>產生個人化退休規劃報告書 (列印/PDF)</span>
+                        </button>
+                        <button onclick="switchToStage1()" class="text-bli-green font-bold flex items-center gap-1 hover:underline mx-auto text-xs opacity-50">返回修改參數</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部簽名區（僅列印顯示） -->
+    <div class="hidden print:block mt-12 px-10">
+        <div class="flex justify-between items-end">
+            <div class="w-1/3 border-b border-black pb-2 text-sm">規劃顧問簽名：</div>
+            <div class="w-1/3 border-b border-black pb-2 text-sm text-right">客戶確認簽名：</div>
+        </div>
+        <p class="mt-4 text-[10px] text-gray-400 text-center">本報告試算結果係依據現行法令及輸入數據推估，實際領取金額以各機關正式核定為準。</p>
+    </div>
+
+    <script>
+        const OfficialFactors = { 60: 242.8705, 61: 242.8705, 62: 233.5902, 63: 224.197, 64: 214.6844, 65: 205.0826, 66: 195.3125, 67: 195.3125, 68: 185.5287, 69: 175.5926, 70: 175.5926 };
+        const LifeExpectancyTable = { 60: 23, 61: 23, 62: 22, 63: 21, 64: 20, 65: 19, 66: 18, 67: 18, 68: 17, 69: 16, 70: 15 };
+        let dataFromStage1 = { laboMonthly: 0, pensionMonthly: 0, claimAge: 0 };
+        let stage2Data = { need: 0, existing: 0, gap: 0 };
+
+        function updateTotalSeniority() {
+            let y1 = parseInt(document.getElementById('yearsBefore60').value) || 0;
+            let m1 = parseInt(document.getElementById('monthsBefore60').value) || 0;
+            let y2 = parseInt(document.getElementById('yearsAfter60').value) || 0;
+            let m2 = parseInt(document.getElementById('monthsAfter60').value) || 0;
+            let totalM = m1 + m2;
+            document.getElementById('dispTotalY').innerText = y1 + y2 + Math.floor(totalM / 12);
+            document.getElementById('dispTotalM').innerText = totalM % 12;
+        }
+
+        function performCalculation() {
+            const birthYear = parseInt(document.getElementById('birthYear').value) || 0;
+            const avgSalary60 = parseFloat(document.getElementById('avgSalary60m').value) || 0;
+            const avgSalary3y = parseFloat(document.getElementById('avgSalary3y').value) || 0;
+            const claimY = parseInt(document.getElementById('claimAgeYear').value) || 0;
+            const claimM = parseInt(document.getElementById('claimAgeMonth').value) || 0;
+            const fund = parseFloat(document.getElementById('pensionFund').value) || 0;
+            const yB = parseInt(document.getElementById('yearsBefore60').value) || 0;
+            const mB = parseInt(document.getElementById('monthsBefore60').value) || 0;
+            const yA = parseInt(document.getElementById('yearsAfter60').value) || 0;
+            const mA = parseInt(document.getElementById('monthsAfter60').value) || 0;
+
+            if (!birthYear || !claimY) { alert("請填妥資料。"); return; }
+            document.getElementById('placeholderMsg').classList.add('hidden');
+            document.getElementById('realResults').classList.remove('hidden');
+
+            const totalMonthsAll = mB + mA;
+            const yearPart = (yB + yA) + Math.floor(totalMonthsAll / 12);
+            const seniorityDecimal = yearPart + (Math.round(((totalMonthsAll % 12) / 12) * 100) / 100);
+            const legalAge = (birthYear <= 46) ? 60 : (birthYear == 47 ? 61 : (birthYear == 48 ? 62 : (birthYear == 49 ? 63 : (birthYear == 50 ? 64 : 65))));
+            const adjYears = Math.round((((claimY - legalAge) * 12 + claimM) / 12) * 100) / 100;
+            const finalMultiplier = 1 + (adjYears * 0.04);
+
+            const f1 = Math.round(((avgSalary60 * seniorityDecimal * 0.00775) + 3000) * finalMultiplier);
+            const f2 = Math.round((avgSalary60 * seniorityDecimal * 0.0155) * finalMultiplier);
+            const betterLabo = Math.max(f1, f2);
+
+            document.getElementById('resFormula1').innerText = f1.toLocaleString();
+            document.getElementById('resFormula2').innerText = f2.toLocaleString();
+            document.getElementById('formula1Container').classList.toggle('is-winner', f1 >= f2);
+            document.getElementById('formula2Container').classList.toggle('is-winner', f2 > f1);
+
+            const unitsB_raw = yB + (Math.round((mB / 12) * 100) / 100);
+            let unitsB = unitsB_raw <= 15 ? unitsB_raw : 15 + (unitsB_raw - 15) * 2;
+            const totalUnits = Math.min(50, Math.min(45, unitsB) + (Math.min(5, (yA + (mA/12))) * 2));
+            document.getElementById('resOnce').innerText = Math.round(avgSalary3y * totalUnits).toLocaleString() + " 元";
+
+            let factor = OfficialFactors[claimY] || 205.0826;
+            const monthlyFund = Math.round(fund / factor);
+            document.getElementById('resMonthlyPension').innerText = monthlyFund.toLocaleString();
+            document.getElementById('resQuarterlyPension').innerText = (monthlyFund * 3).toLocaleString();
+            document.getElementById('resClaimAge').innerText = claimY + " 歲";
+            document.getElementById('resLife').innerText = (LifeExpectancyTable[claimY] || '--') + " 年";
+
+            dataFromStage1 = { laboMonthly: betterLabo, pensionMonthly: monthlyFund, claimAge: claimY };
+        }
+
+        function switchToStage1() { hideAll(); document.getElementById('stage1').classList.remove('hidden'); setActive('tab1'); }
+        function switchToStage2() {
+            if (dataFromStage1.claimAge === 0) { alert("請先完成第一階段試算。"); return; }
+            hideAll(); document.getElementById('stage2').classList.remove('hidden'); setActive('tab2');
+            document.getElementById('imgRetireAge').innerText = dataFromStage1.claimAge;
+            document.getElementById('imgLaboMonthly').innerText = dataFromStage1.laboMonthly.toLocaleString();
+            document.getElementById('imgPensionQuart').innerText = (dataFromStage1.pensionMonthly * 3).toLocaleString();
+            const monthsLeft = (85 - dataFromStage1.claimAge) * 12;
+            document.getElementById('imgLaboTotal').innerText = (dataFromStage1.laboMonthly * monthsLeft).toLocaleString();
+            document.getElementById('imgPensionTotal').innerText = (dataFromStage1.pensionMonthly * monthsLeft).toLocaleString();
+            updatePlanningLogic();
+        }
+        function switchToStage3() {
+            if (dataFromStage1.claimAge === 0) { alert("請先完成第一階段。"); return; }
+            hideAll(); document.getElementById('stage3').classList.remove('hidden'); setActive('tab3');
+            updateStage3Visuals();
+        }
+        function hideAll() { ['stage1','stage2','stage3'].forEach(id => document.getElementById(id).classList.add('hidden')); }
+        function setActive(id) { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+
+        function toggleAlternative() { document.getElementById('altWayContent').style.opacity = document.getElementById('altWayContent').style.opacity === '1' ? '0' : '1'; }
+        function toggleSelfPrep() { document.getElementById('selfPrepContent').style.opacity = document.getElementById('selfPrepContent').style.opacity === '1' ? '0' : '1'; }
+
+        function updatePlanningLogic() {
+            const yearsUntil85 = Math.max(0, 85 - dataFromStage1.claimAge);
+            const mLiving = (parseFloat(document.getElementById('monthlyLiving').value) || 0) * 12 * yearsUntil85;
+            const loan = parseFloat(document.getElementById('loans').value) || 0;
+            const med = parseFloat(document.getElementById('medicalRes').value) || 0;
+            const dream = parseFloat(document.getElementById('dreamFund').value) || 0;
+            const otherN = parseFloat(document.getElementById('otherNeed').value) || 0;
+            const totalDemandVal = Math.round(mLiving + loan + med + dream + otherN);
+            
+            const govTotal = (dataFromStage1.laboMonthly + dataFromStage1.pensionMonthly) * 12 * yearsUntil85 / 10000;
+            const personal = parseFloat(document.getElementById('personalAsset').value) || 0;
+            const totalExistingVal = Math.round(govTotal + personal);
+            const gapVal = Math.max(0, totalDemandVal - totalExistingVal);
+
+            document.getElementById('totalDemand').innerText = (totalDemandVal || 0).toLocaleString();
+            document.getElementById('totalExisting').innerText = (totalExistingVal || 0).toLocaleString();
+            document.getElementById('totalGapLeft').innerText = (gapVal || 0).toLocaleString() + " 萬";
+
+            const prepY = parseInt(document.getElementById('prepYears').value) || 0;
+            document.getElementById('txtTotalDemand').innerText = (totalDemandVal || 0).toLocaleString();
+            document.getElementById('txtTotalExisting').innerText = (totalExistingVal || 0).toLocaleString();
+            document.getElementById('txtTotalGap').innerText = (gapVal || 0).toLocaleString();
+            document.getElementById('txtPrepYears1').innerText = prepY;
+            document.getElementById('txtPrepYears2').innerText = prepY;
+            document.getElementById('txtPrepYears3').innerText = prepY;
+            document.getElementById('txtPrepYearsAlt1').innerText = prepY;
+
+            if (prepY > 0) {
+                const yearly = gapVal / prepY;
+                const monthlyStr = (yearly / 12).toFixed(2);
+                document.getElementById('txtYearlySave').innerText = yearly.toFixed(1);
+                document.getElementById('txtMonthlySave').innerText = monthlyStr;
+                document.getElementById('txtMonthlyAlt').innerText = monthlyStr;
+            } else {
+                document.getElementById('txtYearlySave').innerText = "0";
+                document.getElementById('txtMonthlySave').innerText = "0";
+                document.getElementById('txtMonthlyAlt').innerText = "0";
+            }
+            stage2Data = { need: totalDemandVal, existing: totalExistingVal, gap: gapVal };
+        }
+
+        function updateStage3Visuals() {
+            if (!stage2Data) return;
+            const need = stage2Data.need || 0;
+            const current = stage2Data.existing || 0;
+            const gap = stage2Data.gap || 0;
+            document.getElementById('cylFinalNeed').innerText = need.toLocaleString();
+            document.getElementById('cylFinalExisting').innerText = current.toLocaleString();
+            document.getElementById('cylFinalGap').innerText = gap.toLocaleString();
+            const ratio = need > 0 ? (current / need) : 0;
+            const displayPercent = Math.min(100, Math.round(ratio * 100));
+            document.getElementById('cylPercent').textContent = "達成 " + displayPercent + "%";
+            const waterH = Math.min(260, Math.round(ratio * 260));
+            document.getElementById('cylWater').setAttribute('y', 280 - waterH);
+            document.getElementById('cylWater').setAttribute('height', waterH);
+        }
+
+        function generatePDF() {
+            try {
+                // 1. 更新日期與最新數據
+                document.getElementById('printDate').innerText = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+                updatePlanningLogic();
+                updateStage3Visuals();
+                
+                // 2. 暫時強制展開 T 字帳內容以便列印
+                const selfPrep = document.getElementById('selfPrepContent');
+                const altWay = document.getElementById('altWayContent');
+                if (selfPrep) selfPrep.style.opacity = '1';
+                if (altWay) altWay.style.opacity = '1';
+
+                // 3. 呼叫列印（延遲 100ms 確保 DOM 完成更新）
+                setTimeout(() => {
+                    window.print();
+                    // 列印後恢復 T 字帳原本的互動狀態（視需要）
+                }, 150);
+            } catch (err) {
+                alert("產生報告書時發生錯誤，請重新整理頁面再試。");
+                console.error(err);
+            }
+        }
+
+        function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
+    </script>
+</body>
+</html>
