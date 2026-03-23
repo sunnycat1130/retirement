@@ -29,6 +29,16 @@
         .winner-tag, .info-tag { display: none; color: white; font-size: 0.65rem; padding: 1px 6px; border-radius: 4px; margin-left: 5px; font-weight: bold; }
         .is-winner .winner-tag { display: inline-block; background-color: var(--bli-green); }
         .is-quarterly .info-tag { display: inline-block; background-color: var(--bli-orange); }
+        /* 擇優式：凸顯勝出的那一式 */
+        #formula1Container, #formula2Container { background: #f8fafc; border-color: #e2e8f0; }
+        #formula1Container.is-winner, #formula2Container.is-winner {
+            background: linear-gradient(135deg, #f0faf7, #dcfdf7);
+            border-color: var(--bli-green) !important;
+            box-shadow: 0 0 0 1.5px var(--bli-green);
+        }
+        #formula1Container:not(.is-winner), #formula2Container:not(.is-winner) {
+            opacity: 0.45;
+        }
         .tab-btn { padding: 10px 20px; font-weight: bold; color: #666; border-bottom: 3px solid transparent; transition: all 0.2s; font-size: 13px; }
         .tab-btn.active { color: var(--bli-green); border-bottom: 3px solid var(--bli-green); background-color: rgba(0, 132, 123, 0.05); }
         .fade-in { animation: fadeIn 0.4s ease-in-out; }
@@ -316,15 +326,25 @@
             <div class="section-header">資料輸入 (Step 1)</div>
             <div class="space-y-3">
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="label-text">出生年度 (民國)：</label><input type="number" id="birthYear" placeholder="例: 67" class="input-box"></div>
-                    <div class="grid grid-cols-2 gap-1.5">
-                        <div><label class="label-text">請領歲：</label><input type="number" id="claimAgeYear" placeholder="歲" class="input-box"></div>
-                        <div><label class="label-text">月：</label><select id="claimAgeMonth" class="input-box"><script>for(let i=0; i<=11; i++) document.write(`<option value="${i}">${i < 10 ? '0'+i : i}</option>`);</script></select></div>
+                    <div><label class="label-text">出生年度 (民國)：</label><input type="number" id="birthYear" placeholder="例: 67" class="input-box" oninput="updateLegalAge()"></div>
+                    <div>
+                        <label class="label-text">預計請領歲 / 月：</label>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <input type="number" id="claimAgeYear" placeholder="歲" class="input-box">
+                            <select id="claimAgeMonth" class="input-box"><script>for(let i=0; i<=11; i++) document.write(`<option value="${i}">${i < 10 ? '0'+i : i}</option>`);</script></select>
+                        </div>
+                        <div id="legalAgeHint" class="mt-1 text-[10px] font-bold text-bli-green bg-green-50 border border-green-200 rounded px-2 py-0.5 hidden">📌 您的法定請領年齡為 <span id="legalAgeVal">--</span> 歲</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="label-text">前36個月平均薪資：</label><input type="number" id="avgSalary3y" placeholder="一次金用" class="input-box"></div>
-                    <div><label class="label-text">最高60個月平均薪資：</label><input type="number" id="avgSalary60m" placeholder="年金用" class="input-box"></div>
+                    <div>
+                        <label class="label-text">退休前 36 個月平均薪資：<span class="text-[9px] font-normal text-gray-400">（一次金用）</span></label>
+                        <input type="number" id="avgSalary3y" placeholder="元" class="input-box">
+                    </div>
+                    <div>
+                        <label class="label-text">工作期間最高 60 個月平均薪資：<span class="text-[9px] font-normal text-gray-400">（年金用）</span></label>
+                        <input type="number" id="avgSalary60m" placeholder="元" class="input-box">
+                    </div>
                 </div>
                 <div class="p-3 bg-white border border-gray-200 rounded shadow-sm">
                     <p class="text-xs font-bold text-bli-green mb-2 border-b pb-1">參加保險年資</p>
@@ -334,24 +354,65 @@
                     </div>
                     <div class="flex gap-3 pt-2 mt-2 border-t text-xs font-bold"><span>總年資： <span id="dispTotalY" class="text-bli-green">0</span> 年 <span id="dispTotalM" class="text-bli-green">0</span> 月</span><input type="hidden" id="totalYears"><input type="hidden" id="totalMonths"></div>
                 </div>
-                <div><label class="label-text font-bold">勞退個人專戶累積金額：</label><input type="number" id="pensionFund" placeholder="請輸入金額(元)" class="input-box border-bli-orange"></div>
+                <div>
+                    <label class="label-text font-bold">勞退個人專戶累積金額：</label>
+                    <input type="number" id="pensionFund" placeholder="請輸入金額(元)" class="input-box border-bli-orange">
+                    <p class="mt-1 text-[10px] text-gray-400">💡 可至<a href="https://www.bli.gov.tw" target="_blank" class="text-bli-green underline">勞保局網站</a>或 <span class="font-bold">e 化服務系統</span>查詢個人專戶餘額</p>
+                </div>
                 <div class="flex gap-3 pt-2 no-print"><button onclick="performCalculation()" class="flex-1 bg-bli-orange text-white py-2.5 rounded-lg font-bold hover:brightness-110 shadow-md transition-all">開始試算</button><button onclick="resetAll()" class="w-1/4 bg-gray-400 text-white py-2.5 rounded-lg font-bold hover:bg-gray-500 shadow-md">全部清除</button></div>
             </div>
         </div>
         <div class="lg:w-1/2 p-4 bg-white">
             <div class="section-header text-bli-orange border-bli-orange">試算預估結果</div>
             <div id="placeholderMsg" class="py-24 text-center text-gray-400 font-bold no-print">📊 請於左側輸入資料後點擊「開始試算」</div>
-            <div id="realResults" class="hidden space-y-4">
-                <div class="border rounded-lg p-3 bg-white shadow-sm">
-                    <h3 class="text-xs font-bold text-bli-green mb-2 border-b pb-1">勞工保險老年給付</h3>
-                    <div class="mb-3"><label class="label-text">可一次請領老年給付金額：</label><div id="resOnce" class="text-lg font-bold text-gray-700">--</div></div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div id="formula1Container"><label class="label-text">第一式金額 <span class="winner-tag">擇優發給</span></label><div id="resFormula1" class="result-box text-blue-900 text-center text-xl">--</div></div>
-                        <div id="formula2Container"><label class="label-text">第二式金額 <span class="winner-tag">擇優發給</span></label><div id="resFormula2" class="result-box text-blue-900 text-center text-xl">--</div></div>
+            <div id="realResults" class="hidden space-y-2">
+
+                <!-- 勞工保險老年給付：選擇一 & 選擇二 上下排列 -->
+                <div class="border border-gray-200 rounded-lg overflow-hidden shadow-sm">
+                    <div class="bg-bli-green px-3 py-1.5 text-white text-xs font-bold">勞工保險老年給付 — 請選擇其中一種方式領取</div>
+
+                    <!-- 選擇一：一次請領 -->
+                    <div class="flex items-center gap-3 px-3 py-2.5 bg-gray-50 border-b border-gray-200">
+                        <div class="flex-shrink-0 w-14 text-center">
+                            <div class="text-[9px] font-black text-gray-400 uppercase">選擇一</div>
+                            <div class="text-[10px] font-black text-gray-600 leading-tight mt-0.5">一次請領</div>
+                        </div>
+                        <div class="flex-1 border-l border-gray-200 pl-3">
+                            <div class="text-[9px] text-gray-400 leading-relaxed">領取一筆總金額，適合需要整筆資金或年資較短者</div>
+                        </div>
+                        <div class="flex-shrink-0 text-right">
+                            <div class="text-[9px] text-gray-400 mb-0.5">給付金額</div>
+                            <div id="resOnce" class="text-lg font-black text-gray-800">--</div>
+                        </div>
+                    </div>
+
+                    <!-- 選擇二：年金 -->
+                    <div class="px-3 py-2.5 bg-white">
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="flex-shrink-0 w-14 text-center">
+                                <div class="text-[9px] font-black text-gray-400 uppercase">選擇二</div>
+                                <div class="text-[10px] font-black text-gray-600 leading-tight mt-0.5">年金給付</div>
+                            </div>
+                            <div class="text-[9px] text-gray-400 border-l border-gray-200 pl-3">每月固定領取，兩式由系統自動擇優發給</div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div id="formula1Container" class="rounded-md p-2 border transition-all">
+                                <div class="text-[9px] font-bold text-gray-500 mb-1 flex items-center gap-1">第一式 <span class="winner-tag">★ 建議選此式</span></div>
+                                <div id="resFormula1" class="text-xl font-black text-center text-blue-900">--</div>
+                                <div class="text-[8px] text-gray-400 text-center mt-0.5">元 / 月</div>
+                            </div>
+                            <div id="formula2Container" class="rounded-md p-2 border transition-all">
+                                <div class="text-[9px] font-bold text-gray-500 mb-1 flex items-center gap-1">第二式 <span class="winner-tag">★ 建議選此式</span></div>
+                                <div id="resFormula2" class="text-xl font-black text-center text-blue-900">--</div>
+                                <div class="text-[8px] text-gray-400 text-center mt-0.5">元 / 月</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
+
+                <!-- 勞工退休金 -->
                 <div class="border rounded-lg p-3 bg-orange-50/40 shadow-sm">
-                    <h3 class="text-xs font-bold text-bli-green mb-2 border-b pb-1">勞工退休金月退休金</h3>
+                    <h3 class="text-xs font-bold text-bli-green mb-2 border-b pb-1">勞工退休金</h3>
                     <div class="grid grid-cols-2 gap-3 mb-3">
                         <div class="bg-white p-2 rounded border border-gray-100 shadow-sm"><label class="label-text text-gray-500">預計申請年齡</label><div id="resClaimAge" class="text-sm font-bold text-gray-800">--</div></div>
                         <div class="bg-white p-2 rounded border border-gray-100 shadow-sm"><label class="label-text text-gray-500">平均餘命</label><div id="resLife" class="text-sm font-bold text-gray-800">--</div></div>
@@ -361,7 +422,8 @@
                         <div id="quarterlyPensionContainer"><label class="label-text text-bli-green font-bold">季發金額 <span class="info-tag">每季發給</span></label><div id="resQuarterlyPension" class="result-box text-blue-800 text-center text-xl">--</div></div>
                     </div>
                 </div>
-                <div class="pt-2 no-print"><button onclick="switchToStage2()" class="w-full bg-bli-orange text-white py-3 rounded-xl font-bold text-base hover:scale-[1.01] transition-transform shadow-lg flex items-center justify-center gap-2"><span>進入第二階段：退休缺口深度規劃</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>
+
+                <div class="pt-1 no-print"><button onclick="switchToStage2()" class="w-full bg-bli-orange text-white py-3 rounded-xl font-bold text-base hover:scale-[1.01] transition-transform shadow-lg flex items-center justify-center gap-2"><span>進入第二階段：退休缺口深度規劃</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>
             </div>
         </div>
     </div>
@@ -376,13 +438,19 @@
                 <div class="planning-card border-l-4 border-l-red-600">
                     <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">需求：退休後我需要多少錢？</h3>
                     <ul class="space-y-1.5 font-bold text-slate-700">
-                        <li class="flex items-center justify-between"><span>● 每個月的食衣住行費用</span><div class="flex items-center gap-1"><input type="number" id="monthlyLiving" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
+                        <li class="flex items-center justify-between">
+                            <span>● 每個月食衣住行費用 <span class="text-[9px] font-black text-red-400 bg-red-50 border border-red-200 rounded px-1.5 py-0.5 ml-1">每月</span></span>
+                            <div class="flex items-center gap-1"><input type="number" id="monthlyLiving" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div>
+                        </li>
                         <li class="flex items-center justify-between"><span>● 退休後未償貸款</span><div class="flex items-center gap-1"><input type="number" id="loans" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                         <li class="flex items-center justify-between"><span>● 緊急 / 醫療預備金</span><div class="flex items-center gap-1"><input type="number" id="medicalRes" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                         <li class="flex items-center justify-between"><span>● 旅遊 / 夢想基金</span><div class="flex items-center gap-1"><input type="number" id="dreamFund" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                         <li class="flex items-center justify-between"><span>● 其他</span><div class="flex items-center gap-1"><input type="number" id="otherNeed" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                     </ul>
-                    <div class="mt-1 pt-1 border-t border-red-50 font-black flex items-center justify-between text-slate-900"><span class="text-[10px] opacity-60">>> 以平均餘命至 85 歲計算</span><span class="text-sm">總需準備 <span id="totalDemand" class="text-red-600 text-2xl mx-1">????</span> 萬</span></div>
+                    <div class="mt-1 pt-1 border-t border-red-100 font-black flex items-center justify-between text-slate-900">
+                        <span class="text-[10px] font-bold text-red-400 bg-red-50 border border-red-100 rounded px-1.5 py-0.5">以退休後存活至 85 歲計算</span>
+                        <span class="text-sm">總需準備 <span id="totalDemand" class="text-red-600 text-2xl mx-1">????</span> 萬</span>
+                    </div>
                 </div>
                 <div class="planning-card border-l-4 border-l-blue-700">
                     <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">現有：現在我已經準備了多少？</h3>
@@ -391,15 +459,25 @@
                         <li>● 勞退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span></li>
                         <li class="flex items-center justify-between"><span>● 其他已準備 <span class="text-[9px] font-normal block opacity-50">(存款/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                     </ul>
-                    <div class="mt-1 pt-1 border-t border-blue-50 font-black flex items-center justify-between text-slate-900"><span class="text-[10px] opacity-60">>> 以平均餘命至 85 歲計算</span><span class="text-sm">現在已準備 <span id="totalExisting" class="text-blue-700 text-2xl mx-1">????</span> 萬</span></div>
+                    <div class="mt-1 pt-1 border-t border-blue-100 font-black flex items-center justify-between text-slate-900">
+                        <span class="text-[10px] font-bold text-blue-400 bg-blue-50 border border-blue-100 rounded px-1.5 py-0.5">以退休後存活至 85 歲計算</span>
+                        <span class="text-sm">現在已準備 <span id="totalExisting" class="text-blue-700 text-2xl mx-1">????</span> 萬</span>
+                    </div>
                 </div>
                 <div class="planning-card bg-orange-50/50 border-l-4 border-l-orange-500">
                     <h3 class="text-base font-black text-red-600 mb-1 italic underline underline-offset-4">缺口：我還需要準備多少？</h3>
-                    <div class="space-y-1.5">
+                    <div class="space-y-2">
                         <p class="font-black text-slate-800 flex items-center justify-between"><span class="text-[12px]">● 退休金總需準備缺口：</span><span id="totalGapLeft" class="text-orange-600 text-2xl">????? 萬</span></p>
-                        <div class="flex items-center justify-between font-black text-slate-800">
-                            <span class="text-[12px]">● 您預計花幾年來準備這筆錢？</span>
-                            <div class="flex items-center gap-1"><input type="number" id="prepYears" oninput="updatePlanningLogic()" placeholder="0" class="w-12 underline-input text-center text-blue-700 text-xl bg-transparent"><span>年</span></div>
+                        <!-- 第7點：強化準備年數輸入 -->
+                        <div class="bg-amber-50 border-2 border-amber-400 rounded-lg px-3 py-2 flex items-center justify-between">
+                            <div>
+                                <p class="text-[11px] font-black text-amber-700">⏱ 您預計花幾年來準備這筆退休金？</p>
+                                <p class="text-[9px] text-amber-500 mt-0.5">填入後右側將自動計算每月需準備金額</p>
+                            </div>
+                            <div class="flex items-center gap-1 ml-3 flex-shrink-0">
+                                <input type="number" id="prepYears" oninput="updatePlanningLogic()" placeholder="?" class="w-14 text-center text-amber-700 text-2xl font-black bg-white border-2 border-amber-400 rounded-lg focus:outline-none focus:border-amber-600">
+                                <span class="font-black text-amber-700">年</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -411,9 +489,22 @@
                 <div class="inline-flex items-center gap-3 text-2xl font-black text-red-600 bg-red-50 px-6 py-2 rounded-xl shadow-inner border border-red-100"><span id="txtTotalDemand">?</span>萬 - <span id="txtTotalExisting">?</span>萬 = <span id="txtTotalGap">?</span>萬</div>
             </div>
             <div class="w-full flex-1 flex flex-col mt-2">
-                <div class="grid grid-cols-2 w-full mb-1 no-print">
-                    <div class="text-center pb-3"><button onclick="toggleSelfPrep()" class="alt-btn-style text-2xl">自己準備</button></div>
-                    <div class="text-center pb-3"><button onclick="toggleAlternative()" class="alt-btn-style text-2xl">另外一種方式</button></div>
+                <!-- 第8點：引導式按鈕，步驟1→2 -->
+                <div class="grid grid-cols-2 w-full mb-1 no-print gap-2">
+                    <div class="text-center pb-2">
+                        <button onclick="showSelfPrep()" id="btnSelfPrep"
+                            class="w-full py-2 rounded-lg font-black text-base border-2 border-slate-700 bg-white text-slate-700 hover:bg-slate-700 hover:text-white transition-all flex items-center justify-center gap-2">
+                            <span class="bg-slate-700 text-white text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center flex-shrink-0">1</span>
+                            自己準備
+                        </button>
+                    </div>
+                    <div class="text-center pb-2">
+                        <button onclick="showAlternative()" id="btnAltWay"
+                            class="w-full py-2 rounded-lg font-black text-base border-2 border-blue-700 bg-white text-blue-700 hover:bg-blue-700 hover:text-white transition-all flex items-center justify-center gap-2 opacity-40" id="btnAlt">
+                            <span class="bg-blue-700 text-white text-[10px] font-black rounded-full w-4 h-4 flex items-center justify-center flex-shrink-0">2</span>
+                            另外一種方式
+                        </button>
+                    </div>
                 </div>
                 <div class="t-divider-h no-print"></div>
                 <div class="flex w-full flex-1 relative min-h-[350px]">
@@ -1003,8 +1094,24 @@
     function hideAll() { ['stage1','stage2','stage3'].forEach(id => document.getElementById(id).classList.add('hidden')); }
     function setActive(id) { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
-    function toggleAlternative() { document.getElementById('altWayContent').style.opacity = document.getElementById('altWayContent').style.opacity === '1' ? '0' : '1'; }
-    function toggleSelfPrep() { document.getElementById('selfPrepContent').style.opacity = document.getElementById('selfPrepContent').style.opacity === '1' ? '0' : '1'; }
+    function updateLegalAge() {
+        const by = parseInt(document.getElementById('birthYear').value) || 0;
+        if (!by) { document.getElementById('legalAgeHint').classList.add('hidden'); return; }
+        const age = by <= 46 ? 60 : by == 47 ? 61 : by == 48 ? 62 : by == 49 ? 63 : by == 50 ? 64 : 65;
+        document.getElementById('legalAgeVal').innerText = age;
+        document.getElementById('legalAgeHint').classList.remove('hidden');
+    }
+
+    function showSelfPrep() {
+        document.getElementById('selfPrepContent').style.opacity = '1';
+        const btn2 = document.getElementById('btnAltWay');
+        if (btn2) btn2.classList.remove('opacity-40');
+    }
+    function showAlternative() {
+        document.getElementById('altWayContent').style.opacity = '1';
+    }
+    function toggleAlternative() { showAlternative(); }
+    function toggleSelfPrep() { showSelfPrep(); }
 
     function updatePlanningLogic() {
         const yearsUntil85 = Math.max(0, 85 - dataFromStage1.claimAge);
