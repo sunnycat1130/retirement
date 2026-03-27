@@ -496,7 +496,7 @@
                                 <p class="text-[9px] text-amber-500 mt-0.5">填入後右側將自動計算每月需準備金額</p>
                             </div>
                             <div class="flex items-center gap-1 ml-3 flex-shrink-0">
-                                <input type="number" id="prepYears" oninput="updatePlanningLogic()" placeholder="?" class="w-14 text-center text-amber-700 text-2xl font-black bg-white border-2 border-amber-400 rounded-lg focus:outline-none focus:border-amber-600">
+                                <input type="number" id="prepYears" min="1" oninput="this.value=this.value<1&&this.value!==''?1:this.value; updatePlanningLogic()" placeholder="?" class="w-14 text-center text-amber-700 text-2xl font-black bg-white border-2 border-amber-400 rounded-lg focus:outline-none focus:border-amber-600">
                                 <span class="font-black text-amber-700">年</span>
                             </div>
                         </div>
@@ -764,7 +764,7 @@
                 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;opacity:0.6;">
                     <div style="font-size:9px;font-weight:700;color:#94a3b8;margin-bottom:6px;">月退休金（試算基礎）</div>
                     <div style="display:flex;align-items:baseline;gap:4px;">
-                        <div style="font-size:20px;font-weight:900;color:#475569;" id="rpt-monthly-pension">--</div>
+                        <span style="font-size:20px;font-weight:900;color:#475569;" id="rpt-monthly-pension">--</span>
                         <span style="font-size:9px;color:#475569;font-weight:600;">元／月</span>
                     </div>
                     <div style="font-size:8px;color:#94a3b8;margin-top:4px;">依專戶餘額及平均餘命係數核算</div>
