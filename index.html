@@ -280,12 +280,12 @@
         }
         .rpt-sign-box {
             flex: 1; border-top: 1.5px solid #94a3b8;
-            padding-top: 6px; font-size: 10px; color: #94a3b8; font-weight: 600;
+            padding-top: 6px; font-size: 10px; color: #475569; font-weight: 600;
         }
 
         /* 免責聲明 */
         .rpt-disclaimer {
-            font-size: 8px; color: #cbd5e1; line-height: 1.6;
+            font-size: 8px; color: #475569; line-height: 1.6;
             padding: 10px 14px; border: 1px dashed #e2e8f0; border-radius: 6px;
             margin-top: 10px;
         }
@@ -764,10 +764,10 @@
                 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;opacity:0.6;">
                     <div style="font-size:9px;font-weight:700;color:#94a3b8;margin-bottom:6px;">月退休金（試算基礎）</div>
                     <div style="display:flex;align-items:baseline;gap:4px;">
-                        <div style="font-size:20px;font-weight:900;color:#94a3b8;" id="rpt-monthly-pension">--</div>
-                        <span style="font-size:9px;color:#94a3b8;">元／月</span>
+                        <div style="font-size:20px;font-weight:900;color:#475569;" id="rpt-monthly-pension">--</div>
+                        <span style="font-size:9px;color:#475569;font-weight:600;">元／月</span>
                     </div>
-                    <div style="font-size:8px;color:#cbd5e1;margin-top:4px;">依專戶餘額及平均餘命係數核算</div>
+                    <div style="font-size:8px;color:#94a3b8;margin-top:4px;">依專戶餘額及平均餘命係數核算</div>
                 </div>
                 <!-- 季發：實際領取，強調 -->
                 <div style="background:#f0faf7;border:2px solid #00847b;border-radius:10px;padding:12px 16px;">
@@ -1098,7 +1098,7 @@
             <!-- 簽名 -->
             <div class="rpt-sign-row">
                 <div class="rpt-sign-box">規劃顧問簽名：</div>
-                <div class="rpt-sign-box" style="text-align:right;">客戶確認簽名：</div>
+                <div class="rpt-sign-box">客戶確認簽名：</div>
             </div>
 
             <!-- 免責聲明 -->
@@ -1133,10 +1133,34 @@
         document.getElementById('dispTotalM').innerText = totalM % 12;
     }
 
+    // 勞工保險投保薪資分級表（月薪資總額上限 → 月投保薪資）
+    // 依 114年11月21日勞動部令，自115年1月1日施行
+    const InsuranceSalaryGrades = [
+        { max: 29500,  insured: 29500 },
+        { max: 30300,  insured: 30300 },
+        { max: 31800,  insured: 31800 },
+        { max: 33300,  insured: 33300 },
+        { max: 34800,  insured: 34800 },
+        { max: 36300,  insured: 36300 },
+        { max: 38200,  insured: 38200 },
+        { max: 40100,  insured: 40100 },
+        { max: 42000,  insured: 42000 },
+        { max: 43900,  insured: 43900 },
+        { max: Infinity, insured: 45800 }, // 43,901 元以上，上限 45,800
+    ];
+
+    function toInsuredSalary(salary) {
+        if (!salary || salary <= 0) return 0;
+        for (const grade of InsuranceSalaryGrades) {
+            if (salary <= grade.max) return grade.insured;
+        }
+        return 45800;
+    }
+
     function performCalculation() {
         const birthYear = parseInt(document.getElementById('birthYear').value) || 0;
-        const avgSalary60 = parseFloat(document.getElementById('avgSalary60m').value) || 0;
-        const avgSalary3y = parseFloat(document.getElementById('avgSalary3y').value) || 0;
+        const rawSalary60 = parseFloat(document.getElementById('avgSalary60m').value) || 0;
+        const rawSalary3y = parseFloat(document.getElementById('avgSalary3y').value) || 0;
         const claimY = parseInt(document.getElementById('claimAgeYear').value) || 0;
         const claimM = parseInt(document.getElementById('claimAgeMonth').value) || 0;
         const fund = parseFloat(document.getElementById('pensionFund').value) || 0;
@@ -1146,6 +1170,11 @@
         const mA = parseInt(document.getElementById('monthsAfter60').value) || 0;
 
         if (!birthYear || !claimY) { alert("請填妥資料。"); return; }
+
+        // 對照投保薪資分級表
+        const avgSalary60 = toInsuredSalary(rawSalary60);
+        const avgSalary3y = toInsuredSalary(rawSalary3y);
+
         document.getElementById('placeholderMsg').classList.add('hidden');
         document.getElementById('realResults').classList.remove('hidden');
 
@@ -1184,7 +1213,10 @@
             laboMonthly: betterLabo, pensionMonthly: monthlyFund, claimAge: claimY,
             f1, f2, onceAmt, lifeExp,
             seniority: seniorityStr,
-            birthYear, avgSalary60, avgSalary3y, fund,
+            birthYear,
+            avgSalary60: rawSalary60, avgSalary60Insured: avgSalary60,
+            avgSalary3y: rawSalary3y, avgSalary3yInsured: avgSalary3y,
+            fund,
             claimAgeStr: claimY + ' 歲 ' + claimM + ' 個月'
         };
     }
@@ -1301,8 +1333,8 @@
         setText('rpt-claim-age', dataFromStage1.claimAgeStr || '--');
         setText('rpt-seniority', dataFromStage1.seniority || '--');
         setText('rpt-life-exp', dataFromStage1.lifeExp ? dataFromStage1.lifeExp + ' 年' : '--');
-        setText('rpt-salary60', dataFromStage1.avgSalary60 ? dataFromStage1.avgSalary60.toLocaleString() + ' 元' : '--');
-        setText('rpt-salary3y', dataFromStage1.avgSalary3y ? dataFromStage1.avgSalary3y.toLocaleString() + ' 元' : '--');
+        setText('rpt-salary60', dataFromStage1.avgSalary60Insured ? dataFromStage1.avgSalary60Insured.toLocaleString() + ' 元（投保薪資）' : '--');
+        setText('rpt-salary3y', dataFromStage1.avgSalary3yInsured ? dataFromStage1.avgSalary3yInsured.toLocaleString() + ' 元（投保薪資）' : '--');
         setText('rpt-fund', dataFromStage1.fund ? dataFromStage1.fund.toLocaleString() : '--');
         setText('rpt-f1', dataFromStage1.f1 ? dataFromStage1.f1.toLocaleString() : '--');
         setText('rpt-f2', dataFromStage1.f2 ? dataFromStage1.f2.toLocaleString() : '--');
@@ -1323,15 +1355,13 @@
                 f1Cell.style.borderRadius = '0';
                 document.getElementById('rpt-f1').style.color = '#00847b';
                 if (f1Badge) f1Badge.style.display = 'inline-block';
-                document.getElementById('rpt-f2').style.color = '#cbd5e1';
-                f2Cell.style.opacity = '0.45';
+                document.getElementById('rpt-f2').style.color = '#475569';
             } else {
                 f2Cell.style.background = '#f0faf7';
                 f2Cell.style.borderRadius = '0';
                 document.getElementById('rpt-f2').style.color = '#00847b';
                 if (f2Badge) f2Badge.style.display = 'inline-block';
-                document.getElementById('rpt-f1').style.color = '#cbd5e1';
-                f1Cell.style.opacity = '0.45';
+                document.getElementById('rpt-f1').style.color = '#475569';
             }
         }
 
