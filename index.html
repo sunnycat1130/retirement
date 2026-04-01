@@ -325,6 +325,15 @@
         <div class="lg:w-1/2 p-4 border-r border-gray-200 bg-gray-50">
             <div class="section-header">資料輸入 (Step 1)</div>
             <div class="space-y-3">
+                <!-- 客戶稱謂 -->
+                <div class="flex items-center gap-2 bg-white border border-bli-green rounded-lg px-3 py-2">
+                    <label class="label-text mb-0 flex-shrink-0 text-bli-green font-bold">客戶姓名：</label>
+                    <input type="text" id="clientSurname" placeholder="請輸入姓氏" class="flex-1 bg-transparent border-b border-gray-300 focus:border-bli-green focus:outline-none text-sm font-bold text-slate-700 px-1 py-0.5">
+                    <select id="clientTitle" class="bg-transparent border border-gray-300 rounded-md px-2 py-0.5 text-sm font-bold text-slate-700 focus:border-bli-green focus:outline-none flex-shrink-0">
+                        <option value="先生">先生</option>
+                        <option value="小姐">小姐</option>
+                    </select>
+                </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div><label class="label-text">出生年度 (民國)：</label><input type="number" id="birthYear" placeholder="例: 67" class="input-box" oninput="updateLegalAge()"></div>
                     <div>
@@ -662,7 +671,6 @@
                 </div>
                 <div class="rpt-meta">
                     <div>規劃日期：<span id="rpt-date" style="font-weight:900;">--</span></div>
-                    <div>規劃顧問：____________________</div>
                 </div>
             </div>
             <div class="rpt-page-badge">PAGE 1 · 現況試算</div>
@@ -671,6 +679,13 @@
         <div class="rpt-body">
             <!-- 基本資料 -->
             <div class="rpt-section-title">基本資料</div>
+
+            <!-- 客戶稱謂 -->
+            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:8px;padding:10px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+                <div style="font-size:9px;font-weight:800;color:#00847b;letter-spacing:1px;text-transform:uppercase;">規劃對象</div>
+                <div style="font-size:22px;font-weight:900;color:#1e293b;" id="rpt-client-name">-- 先生／小姐</div>
+            </div>
+
             <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px;">
                 <div class="rpt-info-card">
                     <div class="rpt-info-label">出生年度（民國）</div>
@@ -1097,12 +1112,6 @@
                 <p style="font-size:15px;font-weight:900;color:#d33101;font-style:italic;">幫助您達成目標將是最棒的事情！</p>
             </div>
 
-            <!-- 簽名 -->
-            <div class="rpt-sign-row">
-                <div class="rpt-sign-box">規劃顧問簽名：</div>
-                <div class="rpt-sign-box">客戶確認簽名：</div>
-            </div>
-
             <!-- 免責聲明 -->
             <div class="rpt-disclaimer">
                 本報告試算結果係依據現行法令及輸入數據推估，實際領取金額以各主管機關正式核定為準。規劃結果僅供參考，不代表未來必然之收益。
@@ -1329,6 +1338,12 @@
             const el = document.getElementById(id);
             if (el) el.innerText = today;
         });
+
+        // 客戶稱謂
+        const surname = document.getElementById('clientSurname').value.trim();
+        const title = document.getElementById('clientTitle').value;
+        const clientName = surname ? surname + ' ' + title : '（未填寫）';
+        setText('rpt-client-name', clientName);
 
         // 第一頁
         setText('rpt-birth', (dataFromStage1.birthYear || '--') + ' 年');
