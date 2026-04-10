@@ -1482,14 +1482,113 @@
     }
 
     function generatePDF() {
-        try {
-            // 安全取值：第三階段呼叫時，第二階段的輸入欄位仍存在於 DOM 中，直接讀取即可
-            fillReportTemplate();
-            setTimeout(() => window.print(), 300);
-        } catch(err) {
-            alert('產生報告書時發生錯誤：' + err.message);
-            console.error(err);
+        // 填入日期
+        const today = new Date().toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' });
+        ['rpt-date','rpt-date-p3','rpt-disclaimer-date'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = today;
+        });
+
+        // 填入客戶姓名
+        const surnameEl = document.getElementById('clientSurname');
+        const titleEl = document.getElementById('clientTitle');
+        if (surnameEl && titleEl) {
+            const surname = surnameEl.value.trim();
+            const title = titleEl.value;
+            setText('rpt-client-name', surname ? surname + ' ' + title : '（未填寫）');
         }
+
+        // 填入第一頁基本資料
+        setText('rpt-birth', (dataFromStage1.birthYear || '--') + ' 年');
+        setText('rpt-claim-age', dataFromStage1.claimAgeStr || '--');
+        setText('rpt-seniority', dataFromStage1.seniority || '--');
+        setText('rpt-life-exp', dataFromStage1.lifeExp ? dataFromStage1.lifeExp + ' 年' : '--');
+        setText('rpt-salary60', dataFromStage1.avgSalary60Insured ? dataFromStage1.avgSalary60Insured.toLocaleString() + ' 元' : '--');
+        setText('rpt-salary3y', dataFromStage1.avgSalary3yInsured ? dataFromStage1.avgSalary3yInsured.toLocaleString() + ' 元' : '--');
+        setText('rpt-fund', dataFromStage1.fund ? dataFromStage1.fund.toLocaleString() : '--');
+        setText('rpt-f1', dataFromStage1.f1 ? dataFromStage1.f1.toLocaleString() : '--');
+        setText('rpt-f2', dataFromStage1.f2 ? dataFromStage1.f2.toLocaleString() : '--');
+        setText('rpt-once', dataFromStage1.onceAmt || '--');
+        setText('rpt-monthly-pension', dataFromStage1.pensionMonthly ? dataFromStage1.pensionMonthly.toLocaleString() : '--');
+        setText('rpt-quarterly-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly * 3).toLocaleString() : '--');
+
+        // 擇優式高亮
+        const f1v = dataFromStage1.f1 || 0;
+        const f2v = dataFromStage1.f2 || 0;
+        const f1Cell = document.getElementById('rpt-f1-cell');
+        const f2Cell = document.getElementById('rpt-f2-cell');
+        const f1Badge = document.getElementById('rpt-f1-badge');
+        const f2Badge = document.getElementById('rpt-f2-badge');
+        if (f1Cell && f2Cell && f1v > 0 && f2v > 0) {
+            if (f1v >= f2v) {
+                f1Cell.style.background = '#f0faf7';
+                document.getElementById('rpt-f1').style.color = '#00847b';
+                if (f1Badge) f1Badge.style.display = 'inline-block';
+                document.getElementById('rpt-f2').style.color = '#475569';
+            } else {
+                f2Cell.style.background = '#f0faf7';
+                document.getElementById('rpt-f2').style.color = '#00847b';
+                if (f2Badge) f2Badge.style.display = 'inline-block';
+                document.getElementById('rpt-f1').style.color = '#475569';
+            }
+        }
+
+        // 填入第二頁
+        const need = stage2Data.need || 0;
+        const existing = stage2Data.existing || 0;
+        const gap = stage2Data.gap || 0;
+        const pct = need > 0 ? Math.min(100, Math.round((existing / need) * 100)) : 0;
+        setText('rpt-retire-age-p2', dataFromStage1.claimAge || '--');
+        setText('rpt-p2-demand', need.toLocaleString());
+        setText('rpt-p2-existing', existing.toLocaleString());
+        setText('rpt-p2-gap', gap.toLocaleString());
+        setText('rpt-d-living', stage2Data.living || 0);
+        setText('rpt-d-loan', stage2Data.loan || 0);
+        setText('rpt-d-med', stage2Data.med || 0);
+        setText('rpt-d-dream', stage2Data.dream || 0);
+        setText('rpt-d-other', stage2Data.otherN || 0);
+        setText('rpt-d-total', need.toLocaleString());
+        setText('rpt-e-labo', dataFromStage1.laboMonthly ? dataFromStage1.laboMonthly.toLocaleString() : '0');
+        setText('rpt-e-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly * 3).toLocaleString() : '0');
+        setText('rpt-e-gov-total', (stage2Data.govTotal || 0).toLocaleString());
+        setText('rpt-e-personal', (stage2Data.personal || 0).toLocaleString());
+        setText('rpt-e-total', existing.toLocaleString());
+        setText('rpt-progress-pct', pct + '%');
+        const bar = document.getElementById('rpt-progress-bar');
+        if (bar) bar.style.width = pct + '%';
+        const prepY = stage2Data.prepYears || 0;
+        const yearlyVal = prepY > 0 ? (gap / prepY).toFixed(1) : '0';
+        const monthlyVal = prepY > 0 ? (gap / prepY / 12).toFixed(2) : '0';
+        setText('rpt-plan-years', prepY);
+        setText('rpt-plan-yearly', yearlyVal);
+        setText('rpt-plan-monthly', monthlyVal);
+        setText('rpt-alt-years', prepY);
+        setText('rpt-alt-monthly-ref', monthlyVal);
+        setText('rpt-t-years-l', prepY);
+        setText('rpt-t-years-l2', prepY);
+        setText('rpt-t-years-l3', prepY);
+        setText('rpt-t-years-r', prepY);
+        setText('rpt-t-yearly', yearlyVal);
+        setText('rpt-t-monthly-l', monthlyVal);
+        setText('rpt-t-monthly-r', monthlyVal);
+
+        // 填入第三頁
+        const budgetEl = document.getElementById('finalBudgetChoice');
+        setText('rpt-budget', budgetEl ? parseInt(budgetEl.value || 0).toLocaleString() : '0');
+        setText('rpt-p3-need', need.toLocaleString());
+        setText('rpt-p3-existing', existing.toLocaleString());
+        setText('rpt-p3-gap', gap.toLocaleString());
+        setText('rpt-p3-pct', pct + '%');
+        const p3bar = document.getElementById('rpt-p3-bar');
+        if (p3bar) p3bar.style.width = pct + '%';
+        const waterH = Math.min(260, Math.round((pct / 100) * 260));
+        const cylW = document.getElementById('rpt-cyl-water');
+        if (cylW) { cylW.setAttribute('y', 280 - waterH); cylW.setAttribute('height', waterH); }
+        const cylPct = document.getElementById('rpt-cyl-pct');
+        if (cylPct) cylPct.textContent = pct + '%';
+
+        // 列印
+        setTimeout(() => window.print(), 200);
     }
 
     function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
