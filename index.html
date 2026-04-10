@@ -1482,10 +1482,14 @@
     }
 
     function generatePDF() {
-        updatePlanningLogic();
-        updateStage3Visuals();
-        fillReportTemplate();
-        setTimeout(() => window.print(), 300);
+        try {
+            // 安全取值：第三階段呼叫時，第二階段的輸入欄位仍存在於 DOM 中，直接讀取即可
+            fillReportTemplate();
+            setTimeout(() => window.print(), 300);
+        } catch(err) {
+            alert('產生報告書時發生錯誤：' + err.message);
+            console.error(err);
+        }
     }
 
     function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
