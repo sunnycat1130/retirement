@@ -641,7 +641,13 @@
             <div class="mt-8 text-center w-full max-w-md no-print">
                 <p class="text-slate-400 font-bold italic text-sm">透過合理的提撥預算，我們能填補這段距離，讓未來更安心。</p>
                 <div class="mt-6 flex flex-col gap-3">
-                    <button id="btnPrint" onclick="generatePDF()" class="bg-bli-green text-white font-black px-8 py-3 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:scale-105 transition-all text-base border-2 border-white/20">
+                    <button id="btnPrint" 
+                        onclick="(function(){
+                            var today=new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'long',day:'numeric'});
+                            ['rpt-date','rpt-date-p3','rpt-disclaimer-date'].forEach(function(id){var e=document.getElementById(id);if(e)e.innerText=today;});
+                            window.print();
+                        })()" 
+                        class="bg-bli-green text-white font-black px-8 py-3 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:scale-105 transition-all text-base border-2 border-white/20">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                         <span>產生個人化退休規劃報告書 (列印/PDF)</span>
                     </button>
