@@ -57,9 +57,16 @@
            列印樣式：只顯示報告模板，隱藏主體頁面
         ============================================= */
         @media print {
-            @page { size: A4 portrait; margin: 0; }
-            body { background: white !important; margin: 0; padding: 0; }
-            .main-container, .no-print, nav { display: none !important; }
+            @page {
+                size: A4 portrait;
+                margin: 0mm;
+                /* 以下為標準屬性，抑制瀏覽器自動加上的頁首頁尾 */
+                margin-top: 0mm;
+                margin-bottom: 0mm;
+            }
+            html, body { margin: 0 !important; padding: 0 !important; }
+            body { background: white !important; }
+            .main-container, .no-print, nav, #printHint { display: none !important; }
             #reportTemplate { display: block !important; }
             .report-page {
                 width: 210mm;
@@ -70,6 +77,8 @@
                 position: relative;
                 overflow: hidden;
                 box-sizing: border-box;
+                margin: 0;
+                padding: 0;
             }
             .report-page:last-child { page-break-after: auto; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -96,7 +105,7 @@
         /* 頁首裝飾帶 */
         .rpt-header {
             background: linear-gradient(135deg, #00847b 0%, #005f58 60%, #00a396 100%);
-            padding: 18px 28px 14px;
+            padding: 12px 24px 10px;
             position: relative;
             overflow: hidden;
         }
@@ -117,14 +126,14 @@
             background: rgba(255,255,255,0.05);
         }
         .rpt-logo-mark {
-            width: 36px; height: 36px;
+            width: 30px; height: 30px;
             border: 3px solid rgba(255,255,255,0.6);
             border-radius: 8px;
             display: flex; align-items: center; justify-content: center;
             font-size: 16px; font-weight: 900; color: white;
             margin-right: 10px; flex-shrink: 0;
         }
-        .rpt-title-main { font-size: 17px; font-weight: 900; color: white; letter-spacing: 1px; }
+        .rpt-title-main { font-size: 14px; font-weight: 900; color: white; letter-spacing: 1px; }
         .rpt-title-sub { font-size: 10px; color: rgba(255,255,255,0.7); margin-top: 2px; letter-spacing: 0.5px; }
         .rpt-meta { text-align: right; color: rgba(255,255,255,0.85); font-size: 10px; line-height: 1.8; }
         .rpt-page-badge {
@@ -136,14 +145,14 @@
         }
 
         /* 頁面內容區 */
-        .rpt-body { padding: 14px 24px 12px; }
+        .rpt-body { padding: 10px 20px 8px; }
 
         /* 區塊標題 */
         .rpt-section-title {
             font-size: 11px; font-weight: 900; color: #00847b;
             letter-spacing: 1.5px; text-transform: uppercase;
             display: flex; align-items: center; gap: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
         }
         .rpt-section-title::before {
             content: '';
@@ -162,10 +171,10 @@
             background: #f8fafc;
             border: 1px solid #e2e8f0;
             border-radius: 8px;
-            padding: 10px 14px;
+            padding: 7px 10px;
         }
         .rpt-info-label { font-size: 9px; color: #94a3b8; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 3px; }
-        .rpt-info-value { font-size: 15px; font-weight: 900; color: #1e293b; }
+        .rpt-info-value { font-size: 13px; font-weight: 900; color: #1e293b; }
         .rpt-info-value.green { color: #00847b; }
         .rpt-info-value.orange { color: #d33101; }
         .rpt-info-value.blue { color: #1d4ed8; }
@@ -203,7 +212,7 @@
             position: absolute; bottom: 0; left: 0; right: 0;
             background: #f8fafc;
             border-top: 2px solid #e2e8f0;
-            padding: 8px 28px;
+            padding: 5px 24px;
             display: flex; justify-content: space-between; align-items: center;
         }
         .rpt-footer-note { font-size: 8px; color: #94a3b8; line-height: 1.5; }
@@ -214,10 +223,10 @@
             display: flex; align-items: stretch; gap: 0;
             border-radius: 10px; overflow: hidden;
             border: 1px solid #e2e8f0;
-            margin-bottom: 14px;
+            margin-bottom: 8px;
         }
         .rpt-gap-col {
-            flex: 1; padding: 12px 14px; text-align: center;
+            flex: 1; padding: 8px 10px; text-align: center;
         }
         .rpt-gap-col.demand { background: #fff5f5; border-right: 1px solid #fecaca; }
         .rpt-gap-col.existing { background: #eff6ff; border-right: 1px solid #bfdbfe; }
@@ -226,7 +235,7 @@
         .rpt-gap-col.demand .rpt-gap-label { color: #dc2626; }
         .rpt-gap-col.existing .rpt-gap-label { color: #1d4ed8; }
         .rpt-gap-col.gap .rpt-gap-label { color: #ea580c; }
-        .rpt-gap-amount { font-size: 22px; font-weight: 900; line-height: 1.1; }
+        .rpt-gap-amount { font-size: 18px; font-weight: 900; line-height: 1.1; }
         .rpt-gap-col.demand .rpt-gap-amount { color: #dc2626; }
         .rpt-gap-col.existing .rpt-gap-amount { color: #1d4ed8; }
         .rpt-gap-col.gap .rpt-gap-amount { color: #ea580c; }
@@ -235,8 +244,8 @@
         /* 需求明細清單 */
         .rpt-demand-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 6px 0; border-bottom: 1px dashed #f1f5f9;
-            font-size: 11px;
+            padding: 4px 0; border-bottom: 1px dashed #f1f5f9;
+            font-size: 10px;
         }
         .rpt-demand-item:last-child { border-bottom: none; }
         .rpt-demand-item-label { color: #475569; font-weight: 600; }
@@ -245,7 +254,7 @@
         /* 計畫比較卡 */
         .rpt-plan-compare {
             display: grid; grid-template-columns: 1fr 1fr;
-            gap: 10px; margin-bottom: 14px;
+            gap: 10px; margin-bottom: 8px;
         }
         .rpt-plan-card {
             border-radius: 10px; padding: 14px;
@@ -271,7 +280,7 @@
             background: linear-gradient(135deg, #00847b, #005f58);
             border-radius: 12px; padding: 18px 22px;
             color: white; text-align: center;
-            margin-bottom: 14px;
+            margin-bottom: 8px;
         }
         .rpt-budget-label { font-size: 10px; font-weight: 700; opacity: 0.8; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
         .rpt-budget-amount { font-size: 40px; font-weight: 900; line-height: 1; letter-spacing: -1px; }
@@ -309,6 +318,29 @@
     </style>
 </head>
 <body class="p-2 md:p-3">
+
+<!-- 列印前提示：關閉頁首頁尾 -->
+<div id="printHint" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:9998;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;" class="no-print">
+    <div style="background:white;border-radius:16px;padding:28px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <div style="font-size:36px;margin-bottom:10px;">🖨️</div>
+        <p style="font-size:15px;font-weight:900;color:#1e293b;margin-bottom:10px;">列印前請注意</p>
+        <p style="font-size:13px;color:#475569;line-height:1.8;margin-bottom:6px;text-align:left;">
+            為避免 PDF 出現多餘的空白頁，請在 Safari 列印對話框中：
+        </p>
+        <div style="background:#f1f5f9;border-radius:10px;padding:12px 16px;margin-bottom:18px;text-align:left;">
+            <p style="font-size:13px;color:#1e293b;font-weight:700;margin-bottom:4px;">📋 操作步驟：</p>
+            <p style="font-size:12px;color:#475569;line-height:1.9;margin:0;">
+                1. 點選「<strong>選項</strong>」<br>
+                2. 關閉「<strong>列印頁首和頁尾</strong>」<br>
+                3. 再點「<strong>列印</strong>」
+            </p>
+        </div>
+        <div style="display:flex;gap:10px;">
+            <button onclick="document.getElementById('printHint').style.display='none';" style="flex:1;background:#e2e8f0;color:#475569;font-size:13px;font-weight:700;padding:12px;border-radius:10px;border:none;cursor:pointer;">取消</button>
+            <button onclick="document.getElementById('printHint').style.display='none';window._doPrint();" style="flex:2;background:#00847b;color:white;font-size:14px;font-weight:900;padding:12px;border-radius:10px;border:none;cursor:pointer;">✅ 了解，開始列印</button>
+        </div>
+    </div>
+</div>
 
 <!-- LINE WebView 警告（iOS：自動跳轉，Android：手動提示） -->
 <div id="lineOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;">
@@ -675,7 +707,7 @@
 <div id="reportTemplate">
 
     <!-- ========== 第一頁：基本資料 + 試算結果 ========== -->
-    <div class="report-page" style="padding-bottom: 40px;">
+    <div class="report-page" style="padding-bottom: 28px;">
         <!-- 頁首 -->
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
@@ -698,12 +730,12 @@
             <div class="rpt-section-title">基本資料</div>
 
             <!-- 客戶稱謂 -->
-            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:8px;padding:10px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:8px;padding:7px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
                 <div style="font-size:9px;font-weight:800;color:#00847b;letter-spacing:1px;text-transform:uppercase;">規劃對象</div>
-                <div style="font-size:22px;font-weight:900;color:#1e293b;" id="rpt-client-name">-- 先生／小姐</div>
+                <div style="font-size:18px;font-weight:900;color:#1e293b;" id="rpt-client-name">-- 先生／小姐</div>
             </div>
 
-            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:16px;">
+            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:10px;">
                 <div class="rpt-info-card">
                     <div class="rpt-info-label">出生年度（民國）</div>
                     <div class="rpt-info-value green" id="rpt-birth">--</div>
@@ -721,7 +753,7 @@
                     <div class="rpt-info-value green" id="rpt-life-exp">--</div>
                 </div>
             </div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:16px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
                 <div class="rpt-info-card">
                     <div class="rpt-info-label">工作期間最高 60 個月平均薪資（年金用）</div>
                     <div class="rpt-info-value sm" id="rpt-salary60">--</div>
@@ -738,27 +770,27 @@
 
                 <!-- 選擇一：一次請領 -->
                 <div style="display:flex;align-items:center;gap:0;border-bottom:1px solid #e2e8f0;">
-                    <div style="background:#f1f5f9;padding:10px 14px;width:28%;flex-shrink:0;border-right:1px solid #e2e8f0;">
+                    <div style="background:#f1f5f9;padding:7px 10px;width:28%;flex-shrink:0;border-right:1px solid #e2e8f0;">
                         <div style="font-size:9px;font-weight:900;color:#64748b;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">選擇一</div>
                         <div style="font-size:11px;font-weight:900;color:#334155;">一次請領老年給付</div>
                         <div style="font-size:8px;color:#94a3b8;margin-top:3px;line-height:1.5;">領取一筆總金額<br>適合年資較短者</div>
                     </div>
-                    <div style="flex:1;padding:10px 16px;text-align:right;">
+                    <div style="flex:1;padding:7px 12px;text-align:right;">
                         <div style="font-size:9px;color:#94a3b8;font-weight:600;margin-bottom:3px;">給付金額</div>
-                        <div style="font-size:20px;font-weight:900;color:#334155;" id="rpt-once">--</div>
+                        <div style="font-size:17px;font-weight:900;color:#334155;" id="rpt-once">--</div>
                     </div>
                 </div>
 
                 <!-- 選擇二：年金，兩式擇優 -->
                 <div style="display:flex;align-items:stretch;gap:0;">
-                    <div style="background:#f1f5f9;padding:10px 14px;width:28%;flex-shrink:0;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;justify-content:center;">
+                    <div style="background:#f1f5f9;padding:7px 10px;width:28%;flex-shrink:0;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;justify-content:center;">
                         <div style="font-size:9px;font-weight:900;color:#64748b;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">選擇二</div>
                         <div style="font-size:11px;font-weight:900;color:#334155;">年金給付</div>
                         <div style="font-size:8px;color:#94a3b8;margin-top:3px;line-height:1.5;">每月固定領取<br>兩式自動擇優</div>
                     </div>
                     <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;">
                         <!-- 第一式 -->
-                        <div id="rpt-f1-cell" style="padding:10px 14px;border-right:1px solid #e2e8f0;text-align:center;">
+                        <div id="rpt-f1-cell" style="padding:7px 10px;border-right:1px solid #e2e8f0;text-align:center;">
                             <div style="font-size:9px;font-weight:700;color:#64748b;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px;">
                                 第一式 <span id="rpt-f1-badge" style="display:none;background:#00847b;color:white;font-size:7px;font-weight:900;padding:1px 5px;border-radius:100px;">★ 建議</span>
                             </div>
@@ -766,7 +798,7 @@
                             <div style="font-size:8px;color:#94a3b8;margin-top:2px;">元／月</div>
                         </div>
                         <!-- 第二式 -->
-                        <div id="rpt-f2-cell" style="padding:10px 14px;text-align:center;">
+                        <div id="rpt-f2-cell" style="padding:7px 10px;text-align:center;">
                             <div style="font-size:9px;font-weight:700;color:#64748b;margin-bottom:4px;display:flex;align-items:center;justify-content:center;gap:4px;">
                                 第二式 <span id="rpt-f2-badge" style="display:none;background:#00847b;color:white;font-size:7px;font-weight:900;padding:1px 5px;border-radius:100px;">★ 建議</span>
                             </div>
@@ -781,43 +813,43 @@
             <div class="rpt-section-title">勞工退休金試算</div>
 
             <!-- 1. 勞退專戶累積金額（置頂） -->
-            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:8px;padding:10px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:8px;padding:7px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
                 <div>
                     <div style="font-size:9px;font-weight:800;color:#00847b;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">勞退個人專戶累積金額</div>
                     <div style="font-size:9px;color:#64748b;line-height:1.6;">此金額經年金化計算後，可領至 84 歲為止</div>
                 </div>
                 <div style="text-align:right;">
-                    <div style="font-size:26px;font-weight:900;color:#00847b;letter-spacing:-1px;" id="rpt-fund">--</div>
+                    <div style="font-size:22px;font-weight:900;color:#00847b;letter-spacing:-1px;" id="rpt-fund">--</div>
                     <div style="font-size:10px;font-weight:700;color:#64748b;">元</div>
                 </div>
             </div>
 
             <!-- 2. 月退（淡化）& 季發（強調） -->
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
                 <!-- 月退：試算基礎，深灰顯示 -->
-                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 16px;">
+                <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px 12px;">
                     <div style="font-size:9px;font-weight:700;color:#94a3b8;margin-bottom:6px;">月退休金（試算基礎）</div>
                     <div style="display:flex;align-items:baseline;gap:4px;">
-                        <span style="font-size:20px;font-weight:900;color:#475569;" id="rpt-monthly-pension">--</span>
+                        <span style="font-size:17px;font-weight:900;color:#475569;" id="rpt-monthly-pension">--</span>
                         <span style="font-size:9px;color:#475569;font-weight:600;">元／月</span>
                     </div>
                     <div style="font-size:8px;color:#94a3b8;margin-top:4px;">依專戶餘額及平均餘命係數核算</div>
                 </div>
                 <!-- 季發：實際領取，強調 -->
-                <div style="background:#f0faf7;border:2px solid #00847b;border-radius:10px;padding:12px 16px;">
+                <div style="background:#f0faf7;border:2px solid #00847b;border-radius:10px;padding:8px 12px;">
                     <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
                         <div style="font-size:9px;font-weight:900;color:#00847b;">實際季發金額</div>
                         <span style="background:#d33101;color:white;font-size:7px;font-weight:900;padding:1px 6px;border-radius:100px;">實領</span>
                     </div>
                     <div style="display:flex;align-items:baseline;gap:4px;flex-wrap:wrap;">
-                        <div style="font-size:20px;font-weight:900;color:#00847b;" id="rpt-quarterly-pension">--</div>
+                        <div style="font-size:17px;font-weight:900;color:#00847b;" id="rpt-quarterly-pension">--</div>
                         <span style="font-size:9px;color:#00847b;font-weight:700;">元／季（每3個月領一次）</span>
                     </div>
                 </div>
             </div>
 
             <!-- 3. 試算說明（置底） -->
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;">
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:7px 10px;">
                 <div style="font-size:10px;color:#475569;line-height:1.7;">
                     <strong style="color:#00847b;">試算說明：</strong>本頁試算結果係依據現行勞工保險條例及輸入數據推估，
                     實際領取金額以勞動部勞工保險局正式核定為準。年金給付採第一式與第二式擇優發給。
@@ -834,7 +866,7 @@
     </div>
 
     <!-- ========== 第二頁：退休缺口深度規劃 ========== -->
-    <div class="report-page" style="padding-bottom: 40px;">
+    <div class="report-page" style="padding-bottom: 28px;">
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
                 <div style="display:flex; align-items:center;">
@@ -874,11 +906,11 @@
             </div>
 
             <!-- 需求明細 + 現有明細 並排 -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
                 <!-- 需求明細 -->
                 <div>
                     <div class="rpt-section-title">需求明細</div>
-                    <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:10px 12px;">
+                    <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:8px;padding:7px 10px;">
                         <div class="rpt-demand-item">
                             <span class="rpt-demand-item-label">● 每月食衣住行費用</span>
                             <span class="rpt-demand-item-val"><span id="rpt-d-living">0</span> 萬/月</span>
@@ -908,7 +940,7 @@
                 <!-- 現有資源 -->
                 <div>
                     <div class="rpt-section-title">現有資源</div>
-                    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 12px;">
+                    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:7px 10px;">
                         <div class="rpt-demand-item">
                             <span class="rpt-demand-item-label">● 勞保年金（月）</span>
                             <span class="rpt-demand-item-val" style="color:#1d4ed8;"><span id="rpt-e-labo">0</span> 元</span>
@@ -934,7 +966,7 @@
             </div>
 
             <!-- 達成進度條 -->
-            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;margin-bottom:14px;">
+            <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:8px 12px;margin-bottom:8px;">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                     <span style="font-size:11px;font-weight:800;color:#475569;">目前退休準備達成率</span>
                     <span style="font-size:16px;font-weight:900;color:#00847b;" id="rpt-progress-pct">0%</span>
@@ -970,12 +1002,12 @@
                 <tbody>
                     <!-- 第一列：前提 -->
                     <tr>
-                        <td style="background:#f8fafc;border:1px solid #e2e8f0;border-right:2px solid #1e293b;padding:10px 14px;text-align:center;vertical-align:middle;">
+                        <td style="background:#f8fafc;border:1px solid #e2e8f0;border-right:2px solid #1e293b;padding:7px 10px;text-align:center;vertical-align:middle;">
                             <div style="font-size:12px;font-weight:900;color:#475569;">
                                 假設花 <span id="rpt-t-years-l" style="color:#00847b;font-size:15px;border-bottom:2px solid #00847b;padding:0 4px;">??</span> 年來準備
                             </div>
                         </td>
-                        <td style="background:#f0faf7;border:1px solid #e2e8f0;padding:10px 14px;text-align:center;vertical-align:middle;">
+                        <td style="background:#f0faf7;border:1px solid #e2e8f0;padding:7px 10px;text-align:center;vertical-align:middle;">
                             <div style="font-size:12px;font-weight:900;color:#475569;line-height:1.8;">
                                 每月準備金額變少<br>即使發生變化也不影響計劃
                             </div>
@@ -984,7 +1016,7 @@
 
                     <!-- 第二列：金額 -->
                     <tr>
-                        <td style="background:white;border:1px solid #e2e8f0;border-right:2px solid #1e293b;padding:12px 14px;text-align:center;vertical-align:middle;">
+                        <td style="background:white;border:1px solid #e2e8f0;border-right:2px solid #1e293b;padding:8px 10px;text-align:center;vertical-align:middle;">
                             <div style="font-size:13px;font-weight:900;color:#1e293b;line-height:2;">
                                 每年準備 <span id="rpt-t-yearly" style="color:#00847b;">??</span> 萬<br>
                                 每月準備 <span id="rpt-t-monthly-l" style="color:#00847b;">??</span> 萬<br>
@@ -1001,13 +1033,13 @@
 
                     <!-- 第三列：結語 -->
                     <tr>
-                        <td style="background:#fff7ed;border:1px solid #e2e8f0;border-right:2px solid #1e293b;padding:10px 14px;text-align:center;vertical-align:middle;">
+                        <td style="background:#fff7ed;border:1px solid #e2e8f0;border-right:2px solid #1e293b;padding:7px 10px;text-align:center;vertical-align:middle;">
                             <div style="font-size:12px;font-weight:700;color:#64748b;line-height:1.8;">
                                 健康平安<br>
                                 <span style="font-style:italic;">準備 <span id="rpt-t-years-l3">??</span> 年</span>
                             </div>
                         </td>
-                        <td style="background:#fff7ed;border:1px solid #e2e8f0;padding:10px 14px;text-align:center;vertical-align:middle;">
+                        <td style="background:#fff7ed;border:1px solid #e2e8f0;padding:7px 10px;text-align:center;vertical-align:middle;">
                             <div style="font-size:12px;font-weight:700;color:#64748b;line-height:1.8;">
                                 一樣的時間<br>準備金額較少<br>兼顧現在的生活品質<br>
                                 <span style="font-weight:900;color:#00847b;">發生變化還能留愛給家人</span>
@@ -1025,7 +1057,7 @@
     </div>
 
     <!-- ========== 第三頁：預算規劃 ========== -->
-    <div class="report-page" style="padding-bottom: 40px;">
+    <div class="report-page" style="padding-bottom: 28px;">
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
                 <div style="display:flex; align-items:center;">
@@ -1058,7 +1090,7 @@
             <div class="rpt-section-title">退休資金準備總覽</div>
             <div class="rpt-cylinder-wrap">
                 <!-- SVG 圓柱 -->
-                <div style="position:relative;width:120px;height:260px;flex-shrink:0;">
+                <div style="position:relative;width:100px;height:210px;flex-shrink:0;">
                     <svg viewBox="0 0 120 300" style="width:100%;height:100%;overflow:visible;">
                         <defs>
                             <linearGradient id="rptWaterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -1079,23 +1111,23 @@
                 </div>
 
                 <!-- 數字卡片 -->
-                <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
                     <!-- 1. 退休總需求 -->
-                    <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+                    <div style="background:#fff5f5;border:1px solid #fecaca;border-radius:10px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;">
                         <div>
                             <div style="font-size:9px;font-weight:800;color:#dc2626;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">退休總需求 TARGET</div>
-                            <div style="font-size:22px;font-weight:900;color:#dc2626;" id="rpt-p3-need">0</div>
+                            <div style="font-size:18px;font-weight:900;color:#dc2626;" id="rpt-p3-need">0</div>
                         </div>
                         <div style="font-size:13px;font-weight:700;color:#fca5a5;">萬元</div>
                     </div>
                     <!-- 2. 尚有缺口（強化凸顯） -->
-                    <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2.5px solid #f97316;border-radius:10px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 14px rgba(249,115,22,0.22);">
+                    <div style="background:linear-gradient(135deg,#fff3e0,#ffe0b2);border:2.5px solid #f97316;border-radius:10px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 14px rgba(249,115,22,0.22);">
                         <div>
                             <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
                                 <span style="font-size:9px;font-weight:800;color:#c2410c;letter-spacing:1px;text-transform:uppercase;">尚有缺口 GAP</span>
                                 <span style="background:#f97316;color:white;font-size:8px;font-weight:900;padding:1px 7px;border-radius:100px;letter-spacing:0.5px;">需補足</span>
                             </div>
-                            <div style="font-size:30px;font-weight:900;color:#c2410c;letter-spacing:-1px;" id="rpt-p3-gap">0</div>
+                            <div style="font-size:24px;font-weight:900;color:#c2410c;letter-spacing:-1px;" id="rpt-p3-gap">0</div>
                         </div>
                         <div style="text-align:right;">
                             <div style="font-size:15px;font-weight:800;color:#f97316;">萬元</div>
@@ -1103,15 +1135,15 @@
                         </div>
                     </div>
                     <!-- 3. 目前已準備 -->
-                    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+                    <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:8px 14px;display:flex;justify-content:space-between;align-items:center;">
                         <div>
                             <div style="font-size:9px;font-weight:800;color:#1d4ed8;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;">目前已準備 CURRENT</div>
-                            <div style="font-size:22px;font-weight:900;color:#1d4ed8;" id="rpt-p3-existing">0</div>
+                            <div style="font-size:18px;font-weight:900;color:#1d4ed8;" id="rpt-p3-existing">0</div>
                         </div>
                         <div style="font-size:13px;font-weight:700;color:#93c5fd;">萬元</div>
                     </div>
                     <!-- 達成率進度 -->
-                    <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:10px 16px;">
+                    <div style="background:white;border:1px solid #e2e8f0;border-radius:10px;padding:6px 12px;">
                         <div style="display:flex;justify-content:space-between;margin-bottom:5px;">
                             <span style="font-size:10px;font-weight:700;color:#475569;">目前退休準備達成率</span>
                             <span style="font-size:14px;font-weight:900;color:#00847b;" id="rpt-p3-pct">0%</span>
@@ -1124,7 +1156,7 @@
             </div>
 
             <!-- 顧問結語 -->
-            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:10px;padding:14px 18px;margin-bottom:14px;text-align:center;">
+            <div style="background:linear-gradient(135deg,#f0faf7,#e6f7f5);border:1px solid #b2dfdb;border-radius:10px;padding:10px 16px;margin-bottom:8px;text-align:center;">
                 <p style="font-size:12px;font-weight:700;color:#00847b;margin-bottom:6px;">我將會根據您的想法，給您建議並和您一起討論</p>
                 <p style="font-size:15px;font-weight:900;color:#d33101;font-style:italic;">幫助您達成目標將是最棒的事情！</p>
             </div>
@@ -1609,11 +1641,21 @@
         const originalTitle = document.title;
         document.title = surnameForTitle ? (surnameForTitle + titleForTitle + '退休規劃分析書') : '退休規劃分析書';
 
-        setTimeout(() => {
-            window.print();
-            // 列印對話框關閉後還原標題
-            setTimeout(() => { document.title = originalTitle; }, 2000);
-        }, 200);
+        // 顯示列印提示，確認後再列印
+        const hint = document.getElementById('printHint');
+        if (hint) {
+            hint.style.display = 'flex';
+        } else {
+            doPrint();
+        }
+
+        function doPrint() {
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => { document.title = originalTitle; }, 2000);
+            }, 200);
+        }
+        window._doPrint = doPrint;
     }
 
     function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
