@@ -95,9 +95,9 @@
         }
 
         .report-page {
-            width: 794px;
-            height: 1123px;
-            max-height: 1123px;
+            width: 210mm;
+            height: 297mm;
+            max-height: 297mm;
             background: white;
             position: relative;
             overflow: hidden;
@@ -149,7 +149,7 @@
         }
 
         /* 頁面內容區 */
-        .rpt-body { padding: 10px 20px 8px; flex: 1; overflow: hidden; }
+        .rpt-body { padding: 10px 20px 8px; }
 
         /* 區塊標題 */
         .rpt-section-title {
@@ -217,7 +217,7 @@
             border-top: 2px solid #e2e8f0;
             padding: 5px 24px;
             display: flex; justify-content: space-between; align-items: center;
-            flex-shrink: 0;
+            margin-top: 10px;
         }
         .rpt-footer-note { font-size: 8px; color: #94a3b8; line-height: 1.5; }
         .rpt-footer-page { font-size: 9px; font-weight: 700; color: #cbd5e1; letter-spacing: 1px; }
@@ -320,8 +320,6 @@
         }
         .rpt-badge.blue { background: #1d4ed8; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="p-2 md:p-3">
 
@@ -674,7 +672,7 @@
                     <button id="btnPrint" onclick="generatePDF()"
                         class="bg-bli-green text-white font-black px-8 py-3 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:scale-105 transition-all text-base border-2 border-white/20">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>下載個人化退休規劃報告書 (PDF)</span>
+                        <span>產生個人化退休規劃報告書 (列印/PDF)</span>
                     </button>
                     <button onclick="switchToStage1()" class="text-bli-green font-bold flex items-center gap-1 hover:underline mx-auto text-xs opacity-50">返回修改參數</button>
                 </div>
@@ -839,12 +837,12 @@
                     勞退月退休金係依個人專戶累積金額除以平均餘命係數計算，給付至 84 歲為止。
                 </div>
             </div>
-        </div>
 
-        <!-- 頁腳 -->
-        <div class="rpt-footer">
-            <div class="rpt-footer-note">※ 試算結果僅供參考，實際金額以主管機關核定為準。</div>
-            <div class="rpt-footer-page">1 / 3</div>
+            <!-- 頁腳警語 -->
+            <div class="rpt-footer">
+                <div class="rpt-footer-note">※ 試算結果僅供參考，實際金額以主管機關核定為準。</div>
+                <div class="rpt-footer-page">1 / 3</div>
+            </div>
         </div>
     </div>
 
@@ -1031,11 +1029,12 @@
                     </tr>
                 </tbody>
             </table>
-        </div>
 
-        <div class="rpt-footer">
-            <div class="rpt-footer-note">※ 以上計算以存活至85歲為基準，實際需求因人而異。</div>
-            <div class="rpt-footer-page">2 / 3</div>
+            <!-- 頁腳警語 -->
+            <div class="rpt-footer">
+                <div class="rpt-footer-note">※ 以上計算以存活至85歲為基準，實際需求因人而異。</div>
+                <div class="rpt-footer-page">2 / 3</div>
+            </div>
         </div>
     </div>
 
@@ -1149,11 +1148,12 @@
                 本報告試算結果係依據現行法令及輸入數據推估，實際領取金額以各主管機關正式核定為準。規劃結果僅供參考，不代表未來必然之收益。
                 投資有風險，請於充分了解後審慎決策。本報告由勞工保險及退休金整合規劃系統產出，規劃日期：<span id="rpt-disclaimer-date">--</span>。
             </div>
-        </div>
 
-        <div class="rpt-footer">
-            <div class="rpt-footer-note">※ 以上規劃建議僅供參考，請與顧問充分討論後再做決定。</div>
-            <div class="rpt-footer-page">3 / 3</div>
+            <!-- 頁腳警語 -->
+            <div class="rpt-footer">
+                <div class="rpt-footer-note">※ 以上規劃建議僅供參考，請與顧問充分討論後再做決定。</div>
+                <div class="rpt-footer-page">3 / 3</div>
+            </div>
         </div>
     </div>
 
@@ -1618,60 +1618,16 @@
         const cylPct = document.getElementById('rpt-cyl-pct');
         if (cylPct) cylPct.textContent = pct + '%';
 
-        // 動態設定檔名
+        // 動態設定標題作為 PDF 檔名
         const surnameForTitle = document.getElementById('clientSurname') ? document.getElementById('clientSurname').value.trim() : '';
         const titleForTitle = document.getElementById('clientTitle') ? document.getElementById('clientTitle').value : '先生';
-        const fileName = surnameForTitle ? (surnameForTitle + titleForTitle + '退休規劃分析書.pdf') : '退休規劃分析書.pdf';
+        const originalTitle = document.title;
+        document.title = surnameForTitle ? (surnameForTitle + titleForTitle + '退休規劃分析書') : '退休規劃分析書';
 
-        // 顯示產生中提示
-        const btn = document.getElementById('btnPrint');
-        const originalText = btn ? btn.innerHTML : '';
-        if (btn) btn.innerHTML = '<span style="opacity:0.7">⏳ 產生中，請稍候⋯⋯</span>';
-
-        // 顯示報告模板（截圖用）
-        const tpl = document.getElementById('reportTemplate');
-        tpl.style.display = 'block';
-        tpl.style.position = 'fixed';
-        tpl.style.top = '-9999px';
-        tpl.style.left = '0';
-
-        const pages = tpl.querySelectorAll('.report-page');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
-        async function capturePage(pageEl, index) {
-            const canvas = await html2canvas(pageEl, {
-                scale: 2,
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: '#ffffff',
-                width: pageEl.offsetWidth,
-                height: pageEl.offsetHeight,
-                windowWidth: pageEl.offsetWidth,
-                windowHeight: pageEl.offsetHeight
-            });
-            const imgData = canvas.toDataURL('image/jpeg', 0.95);
-            if (index > 0) pdf.addPage();
-            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
-        }
-
-        (async () => {
-            try {
-                for (let i = 0; i < pages.length; i++) {
-                    await capturePage(pages[i], i);
-                }
-                pdf.save(fileName);
-            } catch(err) {
-                alert('PDF 產生失敗：' + err.message);
-                console.error(err);
-            } finally {
-                tpl.style.display = 'none';
-                tpl.style.position = '';
-                tpl.style.top = '';
-                tpl.style.left = '';
-                if (btn) btn.innerHTML = originalText;
-            }
-        })();
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => { document.title = originalTitle; }, 2000);
+        }, 200);
     }
 
     function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
