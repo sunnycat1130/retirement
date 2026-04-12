@@ -318,15 +318,10 @@
 </head>
 <body class="p-2 md:p-3">
 
-<!-- LINE WebView 警告（iOS：自動跳轉，Android：手動提示） -->
-<div id="lineOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;">
-    <div style="background:white;border-radius:16px;padding:28px 24px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <div style="font-size:40px;margin-bottom:12px;">⚠️</div>
-        <p style="font-size:15px;font-weight:900;color:#1e293b;margin-bottom:8px;">無法在 LINE 中列印</p>
-        <p id="lineOverlayMsg" style="font-size:13px;color:#64748b;line-height:1.7;margin-bottom:20px;"></p>
-        <button id="lineOpenBtn" style="width:100%;background:#06c755;color:white;font-size:14px;font-weight:900;padding:14px;border-radius:10px;border:none;cursor:pointer;margin-bottom:10px;"></button>
-        <p style="font-size:11px;color:#94a3b8;">開啟後請重新進入此頁面操作</p>
-    </div>
+<!-- Android LINE 提示條（平時隱藏） -->
+<div id="androidLineBanner" style="display:none;position:fixed;top:0;left:0;width:100%;z-index:9999;background:#f59e0b;color:white;padding:12px 16px;text-align:center;box-sizing:border-box;">
+    <div style="font-size:13px;font-weight:900;margin-bottom:2px;">⚠️ 請以瀏覽器開啟才能使用列印功能</div>
+    <div style="font-size:11px;opacity:0.9;">點右上角「⋯」→「以瀏覽器開啟」</div>
 </div>
 
 <!-- ============================================================
@@ -1627,55 +1622,18 @@
 
     function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
 
-    // LINE WebView 偵測與處理
+    // LINE WebView 偵測：iOS 自動跳轉 Safari，Android 顯示提示條
     (function handleLineWebView() {
         const ua = navigator.userAgent || '';
-        if (!/Line\//i.test(ua)) return; // 不是 LINE，直接結束
-
+        if (!/Line\//i.test(ua)) return;
         const isIOS = /iPhone|iPad|iPod/i.test(ua);
         const isAndroid = /Android/i.test(ua);
-        const currentUrl = window.location.href;
-
         if (isIOS) {
-            // iOS：嘗試用 x-safari-https:// 自動跳轉 Safari，無需使用者操作
-            const safariUrl = currentUrl.replace(/^https?:\/\//, 'x-safari-https://');
+            const safariUrl = window.location.href.replace(/^https?:\/\//, 'x-safari-https://');
             window.location.href = safariUrl;
-
-            // 若 1.5 秒後還沒跳轉（表示失敗），顯示手動提示
-            setTimeout(function() {
-                const overlay = document.getElementById('lineOverlay');
-                const msg = document.getElementById('lineOverlayMsg');
-                const btn = document.getElementById('lineOpenBtn');
-                if (!overlay) return;
-                if (msg) msg.innerText = '您的裝置無法自動切換至 Safari，請點下方按鈕手動開啟，才能使用列印功能。';
-                if (btn) {
-                    btn.innerText = '📲 以 Safari 開啟';
-                    btn.onclick = function() { window.location.href = safariUrl; };
-                }
-                overlay.style.display = 'flex';
-            }, 1500);
-
         } else if (isAndroid) {
-            // Android：直接顯示提示，讓使用者點按鈕用 Chrome 開啟
-            const chromeUrl = 'googlechrome://navigate?url=' + encodeURIComponent(currentUrl);
-            const overlay = document.getElementById('lineOverlay');
-            const msg = document.getElementById('lineOverlayMsg');
-            const btn = document.getElementById('lineOpenBtn');
-            if (!overlay) return;
-            if (msg) msg.innerText = 'LINE 內建瀏覽器不支援列印功能。請點下方按鈕用 Chrome 開啟，才能使用列印功能。';
-            if (btn) {
-                btn.innerText = '📲 以 Chrome 開啟';
-                btn.onclick = function() {
-                    // 先嘗試 Chrome scheme，若失敗則用 intent://
-                    window.location.href = chromeUrl;
-                    setTimeout(function() {
-                        // Chrome scheme 失敗的備案：Android intent
-                        window.location.href = 'intent://' + currentUrl.replace(/^https?:\/\//, '') +
-                            '#Intent;scheme=https;package=com.android.chrome;end';
-                    }, 1000);
-                };
-            }
-            overlay.style.display = 'flex';
+            const banner = document.getElementById('androidLineBanner');
+            if (banner) banner.style.display = 'block';
         }
     })();
 </script>
