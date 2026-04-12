@@ -100,6 +100,8 @@
             position: relative;
             overflow: hidden;
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
         }
 
         /* 頁首裝飾帶 */
@@ -145,7 +147,7 @@
         }
 
         /* 頁面內容區 */
-        .rpt-body { padding: 10px 20px 8px; }
+        .rpt-body { padding: 10px 20px 8px; flex: 1; overflow: hidden; }
 
         /* 區塊標題 */
         .rpt-section-title {
@@ -209,11 +211,11 @@
 
         /* 頁腳 */
         .rpt-footer {
-            position: absolute; bottom: 0; left: 0; right: 0;
             background: #f8fafc;
             border-top: 2px solid #e2e8f0;
             padding: 5px 24px;
             display: flex; justify-content: space-between; align-items: center;
+            flex-shrink: 0;
         }
         .rpt-footer-note { font-size: 8px; color: #94a3b8; line-height: 1.5; }
         .rpt-footer-page { font-size: 9px; font-weight: 700; color: #cbd5e1; letter-spacing: 1px; }
@@ -707,7 +709,7 @@
 <div id="reportTemplate">
 
     <!-- ========== 第一頁：基本資料 + 試算結果 ========== -->
-    <div class="report-page" style="padding-bottom: 28px;">
+    <div class="report-page" style="">
         <!-- 頁首 -->
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
@@ -866,7 +868,7 @@
     </div>
 
     <!-- ========== 第二頁：退休缺口深度規劃 ========== -->
-    <div class="report-page" style="padding-bottom: 28px;">
+    <div class="report-page" style="">
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
                 <div style="display:flex; align-items:center;">
@@ -1057,7 +1059,7 @@
     </div>
 
     <!-- ========== 第三頁：預算規劃 ========== -->
-    <div class="report-page" style="padding-bottom: 28px;">
+    <div class="report-page" style="">
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
                 <div style="display:flex; align-items:center;">
