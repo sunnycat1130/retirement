@@ -77,6 +77,8 @@
                 position: relative;
                 overflow: hidden;
                 box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
                 margin: 0;
                 padding: 0;
             }
@@ -93,9 +95,9 @@
         }
 
         .report-page {
-            width: 210mm;
-            height: 297mm;
-            max-height: 297mm;
+            width: 794px;
+            height: 1123px;
+            max-height: 1123px;
             background: white;
             position: relative;
             overflow: hidden;
@@ -318,31 +320,10 @@
         }
         .rpt-badge.blue { background: #1d4ed8; }
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body class="p-2 md:p-3">
-
-<!-- 列印前提示：關閉頁首頁尾 -->
-<div id="printHint" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.65);z-index:9998;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;" class="no-print">
-    <div style="background:white;border-radius:16px;padding:28px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <div style="font-size:36px;margin-bottom:10px;">🖨️</div>
-        <p style="font-size:15px;font-weight:900;color:#1e293b;margin-bottom:10px;">列印前請注意</p>
-        <p style="font-size:13px;color:#475569;line-height:1.8;margin-bottom:6px;text-align:left;">
-            為避免 PDF 出現多餘的空白頁，請在 Safari 列印對話框中：
-        </p>
-        <div style="background:#f1f5f9;border-radius:10px;padding:12px 16px;margin-bottom:18px;text-align:left;">
-            <p style="font-size:13px;color:#1e293b;font-weight:700;margin-bottom:4px;">📋 操作步驟：</p>
-            <p style="font-size:12px;color:#475569;line-height:1.9;margin:0;">
-                1. 點選「<strong>選項</strong>」<br>
-                2. 關閉「<strong>列印頁首和頁尾</strong>」<br>
-                3. 再點「<strong>列印</strong>」
-            </p>
-        </div>
-        <div style="display:flex;gap:10px;">
-            <button onclick="document.getElementById('printHint').style.display='none';" style="flex:1;background:#e2e8f0;color:#475569;font-size:13px;font-weight:700;padding:12px;border-radius:10px;border:none;cursor:pointer;">取消</button>
-            <button onclick="document.getElementById('printHint').style.display='none';window._doPrint();" style="flex:2;background:#00847b;color:white;font-size:14px;font-weight:900;padding:12px;border-radius:10px;border:none;cursor:pointer;">✅ 了解，開始列印</button>
-        </div>
-    </div>
-</div>
 
 <!-- LINE WebView 警告（iOS：自動跳轉，Android：手動提示） -->
 <div id="lineOverlay" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;box-sizing:border-box;">
@@ -693,7 +674,7 @@
                     <button id="btnPrint" onclick="generatePDF()"
                         class="bg-bli-green text-white font-black px-8 py-3 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:scale-105 transition-all text-base border-2 border-white/20">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>產生個人化退休規劃報告書 (列印/PDF)</span>
+                        <span>下載個人化退休規劃報告書 (PDF)</span>
                     </button>
                     <button onclick="switchToStage1()" class="text-bli-green font-bold flex items-center gap-1 hover:underline mx-auto text-xs opacity-50">返回修改參數</button>
                 </div>
@@ -1637,27 +1618,60 @@
         const cylPct = document.getElementById('rpt-cyl-pct');
         if (cylPct) cylPct.textContent = pct + '%';
 
-        // 動態設定標題作為 PDF 檔名
+        // 動態設定檔名
         const surnameForTitle = document.getElementById('clientSurname') ? document.getElementById('clientSurname').value.trim() : '';
         const titleForTitle = document.getElementById('clientTitle') ? document.getElementById('clientTitle').value : '先生';
-        const originalTitle = document.title;
-        document.title = surnameForTitle ? (surnameForTitle + titleForTitle + '退休規劃分析書') : '退休規劃分析書';
+        const fileName = surnameForTitle ? (surnameForTitle + titleForTitle + '退休規劃分析書.pdf') : '退休規劃分析書.pdf';
 
-        // 顯示列印提示，確認後再列印
-        const hint = document.getElementById('printHint');
-        if (hint) {
-            hint.style.display = 'flex';
-        } else {
-            doPrint();
+        // 顯示產生中提示
+        const btn = document.getElementById('btnPrint');
+        const originalText = btn ? btn.innerHTML : '';
+        if (btn) btn.innerHTML = '<span style="opacity:0.7">⏳ 產生中，請稍候⋯⋯</span>';
+
+        // 顯示報告模板（截圖用）
+        const tpl = document.getElementById('reportTemplate');
+        tpl.style.display = 'block';
+        tpl.style.position = 'fixed';
+        tpl.style.top = '-9999px';
+        tpl.style.left = '0';
+
+        const pages = tpl.querySelectorAll('.report-page');
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+        async function capturePage(pageEl, index) {
+            const canvas = await html2canvas(pageEl, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                backgroundColor: '#ffffff',
+                width: pageEl.offsetWidth,
+                height: pageEl.offsetHeight,
+                windowWidth: pageEl.offsetWidth,
+                windowHeight: pageEl.offsetHeight
+            });
+            const imgData = canvas.toDataURL('image/jpeg', 0.95);
+            if (index > 0) pdf.addPage();
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
         }
 
-        function doPrint() {
-            setTimeout(() => {
-                window.print();
-                setTimeout(() => { document.title = originalTitle; }, 2000);
-            }, 200);
-        }
-        window._doPrint = doPrint;
+        (async () => {
+            try {
+                for (let i = 0; i < pages.length; i++) {
+                    await capturePage(pages[i], i);
+                }
+                pdf.save(fileName);
+            } catch(err) {
+                alert('PDF 產生失敗：' + err.message);
+                console.error(err);
+            } finally {
+                tpl.style.display = 'none';
+                tpl.style.position = '';
+                tpl.style.top = '';
+                tpl.style.left = '';
+                if (btn) btn.innerHTML = originalText;
+            }
+        })();
     }
 
     function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
