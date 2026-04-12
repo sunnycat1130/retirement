@@ -70,12 +70,9 @@
             #reportTemplate { display: block !important; }
             .report-page {
                 width: 210mm;
-                height: 297mm;
-                max-height: 297mm;
                 page-break-after: always;
                 page-break-inside: avoid;
                 position: relative;
-                overflow: hidden;
                 box-sizing: border-box;
                 display: flex;
                 flex-direction: column;
@@ -96,11 +93,9 @@
 
         .report-page {
             width: 210mm;
-            height: 297mm;
-            max-height: 297mm;
+            min-height: 200mm;
             background: white;
             position: relative;
-            overflow: hidden;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
