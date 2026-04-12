@@ -63,10 +63,13 @@
             #reportTemplate { display: block !important; }
             .report-page {
                 width: 210mm;
-                min-height: 297mm;
+                height: 297mm;
+                max-height: 297mm;
                 page-break-after: always;
+                page-break-inside: avoid;
                 position: relative;
                 overflow: hidden;
+                box-sizing: border-box;
             }
             .report-page:last-child { page-break-after: auto; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -82,7 +85,8 @@
 
         .report-page {
             width: 210mm;
-            min-height: 297mm;
+            height: 297mm;
+            max-height: 297mm;
             background: white;
             position: relative;
             overflow: hidden;
@@ -132,7 +136,7 @@
         }
 
         /* 頁面內容區 */
-        .rpt-body { padding: 20px 28px 16px; }
+        .rpt-body { padding: 14px 24px 12px; }
 
         /* 區塊標題 */
         .rpt-section-title {
@@ -671,7 +675,7 @@
 <div id="reportTemplate">
 
     <!-- ========== 第一頁：基本資料 + 試算結果 ========== -->
-    <div class="report-page" style="padding-bottom: 60px;">
+    <div class="report-page" style="padding-bottom: 40px;">
         <!-- 頁首 -->
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
@@ -830,7 +834,7 @@
     </div>
 
     <!-- ========== 第二頁：退休缺口深度規劃 ========== -->
-    <div class="report-page" style="padding-bottom: 60px;">
+    <div class="report-page" style="padding-bottom: 40px;">
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
                 <div style="display:flex; align-items:center;">
@@ -1021,7 +1025,7 @@
     </div>
 
     <!-- ========== 第三頁：預算規劃 ========== -->
-    <div class="report-page" style="padding-bottom: 60px;">
+    <div class="report-page" style="padding-bottom: 40px;">
         <div class="rpt-header">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1;">
                 <div style="display:flex; align-items:center;">
@@ -1599,8 +1603,17 @@
         const cylPct = document.getElementById('rpt-cyl-pct');
         if (cylPct) cylPct.textContent = pct + '%';
 
-        // 列印
-        setTimeout(() => window.print(), 200);
+        // 動態設定標題作為 PDF 檔名
+        const surnameForTitle = document.getElementById('clientSurname') ? document.getElementById('clientSurname').value.trim() : '';
+        const titleForTitle = document.getElementById('clientTitle') ? document.getElementById('clientTitle').value : '先生';
+        const originalTitle = document.title;
+        document.title = surnameForTitle ? (surnameForTitle + titleForTitle + '退休規劃分析書') : '退休規劃分析書';
+
+        setTimeout(() => {
+            window.print();
+            // 列印對話框關閉後還原標題
+            setTimeout(() => { document.title = originalTitle; }, 2000);
+        }, 200);
     }
 
     function resetAll() { if(confirm("確定清除所有數據？")) window.location.reload(); }
