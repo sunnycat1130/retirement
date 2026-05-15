@@ -353,23 +353,28 @@
                     </select>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div><label class="label-text">出生年度 (民國)：</label><input type="number" id="birthYear" placeholder="例: 67" class="input-box" oninput="updateLegalAge()"></div>
                     <div>
-                        <label class="label-text">預計請領歲 / 月：</label>
+                        <label class="label-text">出生年度 (民國)：</label>
+                        <input type="number" id="birthYear" placeholder="例: 67" class="input-box" oninput="updateLegalAge()">
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-between gap-2">
+                            <label class="label-text mb-0">預計請領歲 / 月：</label>
+                            <div id="legalAgeHint" style="display:none; font-size:10px; font-weight:700; color:#00847b; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:4px; padding:2px 8px; white-space:nowrap;">📌 法定請領年齡 <span id="legalAgeVal">--</span> 歲</div>
+                        </div>
                         <div class="grid grid-cols-2 gap-1.5">
-                            <input type="number" id="claimAgeYear" placeholder="歲" class="input-box">
+                            <input type="number" id="claimAgeYear" placeholder="歲" class="input-box" oninput="onClaimAgeInput()">
                             <select id="claimAgeMonth" class="input-box"><script>for(let i=0; i<=11; i++) document.write(`<option value="${i}">${i < 10 ? '0'+i : i}</option>`);</script></select>
                         </div>
-                        <div id="legalAgeHint" class="mt-1 text-[10px] font-bold text-bli-green bg-green-50 border border-green-200 rounded px-2 py-0.5 hidden">📌 您的法定請領年齡為 <span id="legalAgeVal">--</span> 歲</div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="label-text">退休前 36 個月平均薪資：<span class="text-[9px] font-normal text-gray-400">（一次金用）</span></label>
+                        <label class="label-text">退休前 36 個月平均月投保薪資：<span class="text-[9px] font-normal text-gray-400">（一次金用）</span></label>
                         <input type="number" id="avgSalary3y" placeholder="元" class="input-box">
                     </div>
                     <div>
-                        <label class="label-text">工作期間最高 60 個月平均薪資：<span class="text-[9px] font-normal text-gray-400">（年金用）</span></label>
+                        <label class="label-text">工作期間最高 60 個月平均投保薪資：<span class="text-[9px] font-normal text-gray-400">（年金用）</span></label>
                         <input type="number" id="avgSalary60m" placeholder="元" class="input-box">
                     </div>
                 </div>
@@ -382,15 +387,27 @@
                     <div class="flex gap-3 pt-2 mt-2 border-t text-xs font-bold"><span>總年資： <span id="dispTotalY" class="text-bli-green">0</span> 年 <span id="dispTotalM" class="text-bli-green">0</span> 月</span><input type="hidden" id="totalYears"><input type="hidden" id="totalMonths"></div>
                 </div>
                 <div>
-                    <label class="label-text font-bold">勞退個人專戶累積金額：</label>
-                    <input type="number" id="pensionFund" placeholder="請輸入金額(元)" class="input-box border-bli-orange">
+                    <div class="flex items-start gap-2">
+                        <div class="flex-1">
+                            <label class="label-text font-bold">勞退個人專戶累積金額：</label>
+                            <input type="number" id="pensionFund" placeholder="請輸入金額(元)" class="input-box border-bli-orange">
+                        </div>
+                        <!-- 未滿60歲時顯示：預估請領年限（同列右側） -->
+                        <div id="divPensionYear" class="hidden flex-1">
+                            <label class="label-text text-orange-600 font-bold">預估請領年限：</label>
+                            <input type="number" id="txbPensionYear" placeholder="年" class="input-box border-orange-400" min="1">
+                        </div>
+                    </div>
                     <p class="mt-1 text-[10px] text-gray-400">💡 可至<a href="https://www.bli.gov.tw" target="_blank" class="text-bli-green underline">勞保局網站</a>或 <a href="https://edesk.bli.gov.tw/me/#/home" target="_blank" class="text-bli-green underline font-bold">e 化服務系統</a>查詢個人專戶餘額</p>
                 </div>
                 <div class="flex gap-3 pt-2 no-print"><button onclick="performCalculation()" class="flex-1 bg-bli-orange text-white py-2.5 rounded-lg font-bold hover:brightness-110 shadow-md transition-all">開始試算</button><button onclick="resetAll()" class="w-1/4 bg-gray-400 text-white py-2.5 rounded-lg font-bold hover:bg-gray-500 shadow-md">全部清除</button></div>
             </div>
         </div>
         <div class="lg:w-1/2 p-4 bg-white">
-            <div class="section-header text-bli-orange border-bli-orange">試算預估結果</div>
+            <div class="section-header text-bli-orange border-bli-orange flex items-baseline justify-between gap-2">
+                <span>試算預估結果</span>
+                <span class="text-[9px] text-gray-400 font-normal">※ 試算結果與勞保局官網若有 1～2 元內的微小差異，係因四捨五入時機不同所致，不影響實際參考價值。</span>
+            </div>
             <div id="placeholderMsg" class="py-24 text-center text-gray-400 font-bold no-print">📊 請於左側輸入資料後點擊「開始試算」</div>
             <div id="realResults" class="hidden space-y-2">
 
@@ -406,6 +423,7 @@
                         </div>
                         <div class="flex-1 border-l border-gray-200 pl-3">
                             <div class="text-[9px] text-gray-400 leading-relaxed">領取一筆總金額，適合需要整筆資金或年資較短者</div>
+                            <div id="msgOnce" class="hidden text-[9px] font-bold text-orange-600 leading-relaxed mt-0.5"></div>
                         </div>
                         <div class="flex-shrink-0 text-right">
                             <div class="text-[9px] text-gray-400 mb-0.5">給付金額</div>
@@ -420,18 +438,21 @@
                                 <div class="text-[9px] font-black text-gray-400 uppercase">選擇二</div>
                                 <div class="text-[10px] font-black text-gray-600 leading-tight mt-0.5">年金給付</div>
                             </div>
-                            <div class="text-[9px] text-gray-400 border-l border-gray-200 pl-3">每月固定領取，兩式由系統自動擇優發給</div>
+                            <div class="flex-1 border-l border-gray-200 pl-3 flex items-center justify-between gap-2">
+                                <div class="text-[9px] text-gray-400 flex-shrink-0">兩式由系統自動擇優發給</div>
+                                <div id="msgOldPay" class="hidden text-[9px] font-bold text-red-600 text-right"></div>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
-                            <div id="formula1Container" class="rounded-md p-2 border transition-all">
-                                <div class="text-[9px] font-bold text-gray-500 mb-1 flex items-center gap-1">第一式 <span class="winner-tag">★ 建議選此式</span></div>
+                            <div id="formula1Container" class="rounded-md py-1 px-2 border transition-all">
+                                <div class="text-[9px] font-bold text-gray-500 mb-0.5 flex items-center gap-1">第一式 <span class="winner-tag">★ 建議選此式</span></div>
                                 <div class="flex items-baseline gap-1">
                                     <div id="resFormula1" class="text-xl font-black text-blue-900">--</div>
                                     <span class="text-[9px] text-gray-400 font-semibold">元／月</span>
                                 </div>
                             </div>
-                            <div id="formula2Container" class="rounded-md p-2 border transition-all">
-                                <div class="text-[9px] font-bold text-gray-500 mb-1 flex items-center gap-1">第二式 <span class="winner-tag">★ 建議選此式</span></div>
+                            <div id="formula2Container" class="rounded-md py-1 px-2 border transition-all">
+                                <div class="text-[9px] font-bold text-gray-500 mb-0.5 flex items-center gap-1">第二式 <span class="winner-tag">★ 建議選此式</span></div>
                                 <div class="flex items-baseline gap-1">
                                     <div id="resFormula2" class="text-xl font-black text-blue-900">--</div>
                                     <span class="text-[9px] text-gray-400 font-semibold">元／月</span>
@@ -442,16 +463,25 @@
                 </div>
 
                 <!-- 勞工退休金 -->
-                <div class="border rounded-lg overflow-hidden shadow-sm">
-                    <h3 class="text-xs font-bold text-bli-green px-3 py-1.5 border-b border-gray-200 bg-orange-50/60">勞工退休金</h3>
+                <div class="border rounded-lg shadow-sm">
+                    <h3 class="bg-bli-green px-3 py-1.5 text-white text-xs font-bold flex items-center justify-between gap-2">
+                        <span>勞工退休金</span>
+                        <span id="msgPensionUnder60" style="display:none; font-size:10px; font-weight:bold; color:#fde68a;">⚠️ 未滿 60 歲須符合勞工退休金條例第 24 條之 2 規定，始可提前請領勞工退休金。</span>
+                    </h3>
                     <div class="p-3">
                         <div class="grid grid-cols-2 gap-3 mb-3">
-                            <div class="bg-white p-2 rounded border border-gray-100 shadow-sm"><label class="label-text text-gray-500">預計申請年齡</label><div id="resClaimAge" class="text-sm font-bold text-gray-800">--</div></div>
-                            <div class="bg-white p-2 rounded border border-gray-100 shadow-sm"><label class="label-text text-gray-500">平均餘命</label><div id="resLife" class="text-sm font-bold text-gray-800">--</div></div>
+                            <div class="bg-white p-2 rounded border border-gray-100 shadow-sm flex items-center justify-between gap-2">
+                                <label class="label-text text-gray-500 mb-0">預計申請年齡</label>
+                                <div id="resClaimAge" class="text-sm font-bold text-gray-800">--</div>
+                            </div>
+                            <div class="bg-white p-2 rounded border border-gray-100 shadow-sm flex items-center justify-between gap-2">
+                                <label class="label-text text-gray-500 mb-0">平均餘命</label>
+                                <div id="resLife" class="text-sm font-bold text-gray-800">--</div>
+                            </div>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <!-- 月退（參考用，淡化） -->
-                            <div class="rounded-lg p-2 bg-gray-50 border border-gray-200 opacity-60">
+                            <div class="rounded-lg py-1 px-2 bg-gray-50 border border-gray-200 opacity-60">
                                 <label class="label-text text-gray-400">月退休金（試算基礎）</label>
                                 <div class="flex items-baseline gap-1">
                                     <span id="resMonthlyPension" class="text-lg font-bold text-gray-500">--</span>
@@ -459,8 +489,8 @@
                                 </div>
                             </div>
                             <!-- 季發（實際領取，強調） -->
-                            <div id="quarterlyPensionContainer" class="rounded-lg p-2 bg-green-50 border-2 border-bli-green shadow-sm">
-                                <div class="flex items-center gap-1 mb-1">
+                            <div id="quarterlyPensionContainer" class="rounded-lg py-1 px-2 bg-green-50 border-2 border-bli-green shadow-sm">
+                                <div class="flex items-center gap-1 mb-0.5">
                                     <label class="label-text text-bli-green font-black mb-0">實際季發金額</label>
                                     <span class="bg-bli-orange text-white text-[8px] font-black px-1.5 py-0.5 rounded-full leading-none">實領</span>
                                 </div>
@@ -470,11 +500,12 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- 勞退警語區 -->
+                        <div id="msgPension" class="hidden mt-2 text-xs font-bold text-red-700 bg-red-100 border border-red-400 rounded px-3 py-2"></div>
                     </div>
                 </div>
 
-                <p class="text-[10px] text-gray-400 text-center pt-1">※ 試算結果與勞保局官網若有 1～2 元內的微小差異，係因四捨五入時機不同所致，不影響實際參考價值。</p>
-                <div class="pt-1 no-print"><button onclick="switchToStage2()" class="w-full bg-bli-orange text-white py-3 rounded-xl font-bold text-base hover:scale-[1.01] transition-transform shadow-lg flex items-center justify-center gap-2"><span>進入第二階段：退休缺口深度規劃</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>
+                <div class="pt-0.5 no-print"><button onclick="switchToStage2()" class="w-full bg-bli-orange text-white py-2.5 rounded-xl font-bold text-sm hover:scale-[1.01] transition-transform shadow-lg flex items-center justify-center gap-2"><span>進入第二階段：退休缺口深度規劃</span><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></button></div>
             </div>
         </div>
     </div>
@@ -506,7 +537,7 @@
                 <div class="planning-card border-l-4 border-l-blue-700">
                     <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">現有：現在我已經準備了多少？</h3>
                     <ul class="space-y-1.5 font-bold text-slate-700">
-                        <li>● 勞保年金每月 <span id="imgLaboMonthly" class="text-blue-800 font-black text-base">OOO</span></li>
+                        <li>● <span id="imgLaboLabel">勞保年金每月</span> <span id="imgLaboMonthly" class="text-blue-800 font-black text-base">OOO</span></li>
                         <li>● 勞退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span></li>
                         <li class="flex items-center justify-between"><span>● 其他已準備 <span class="text-[9px] font-normal block opacity-50">(存款/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg bg-transparent"><span>萬</span></div></li>
                     </ul>
@@ -913,8 +944,8 @@
                     <div class="rpt-section-title">現有資源</div>
                     <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 14px;">
                         <div class="rpt-demand-item">
-                            <span class="rpt-demand-item-label">● 勞保年金（月）</span>
-                            <span class="rpt-demand-item-val" style="color:#1d4ed8;"><span id="rpt-e-labo">0</span> 元</span>
+                            <span class="rpt-demand-item-label" id="rpt-e-labo-label">● 勞保年金（月）</span>
+                            <span class="rpt-demand-item-val" style="color:#1d4ed8;"><span id="rpt-e-labo">0</span> <span id="rpt-e-labo-unit">元</span></span>
                         </div>
                         <div class="rpt-demand-item">
                             <span class="rpt-demand-item-label">● 勞退退休金（季）</span>
@@ -1151,13 +1182,36 @@
 
 
 <script>
-    // 勞退月退係數表（依勞保局官網實際試算結果反推，共11組驗證，全部吻合）
-    const OfficialFactors = {
-        60: 242.8756, 61: 242.8658, 62: 233.5842, 63: 224.1901,
-        64: 214.6844, 65: 205.0802, 66: 205.0781, 67: 195.3583,
-        68: 185.5288, 69: 175.5767, 70: 175.5823
-    };
-    const LifeExpectancyTable = { 60: 23, 61: 23, 62: 22, 63: 21, 64: 20, 65: 19, 66: 18, 67: 18, 68: 17, 69: 16, 70: 15 };
+    // 平均餘命對照表（依勞保局官方 fee26.js，2024/03/01 後版本）
+    // ex1：整數年（畫面顯示用）；exs：精算小數值（計算月退金用）
+    // 索引 0 = 60歲，1 = 61歲，…，25 = 85歲以上
+    const ex1 = [23,23,22,21,20,19,19,18,17,16,16,15,14,13,13,12,11,11,10,9,9,8,8,7,6,6];
+    const exs  = [23.47,22.65,21.83,21.02,20.21,19.41,18.62,17.84,17.06,16.30,15.55,14.82,14.10,13.39,12.70,12.02,11.35,10.70,10.06,9.44,8.82,8.21,7.62,7.03,6.44,5.85];
+    const PENSION_RATE = 0.011473; // 現行利率 1.1473%（2024/03/01 起）
+
+    // 官方精算公式（對應 fee26.js calcTirePay）
+    // 月退金 = 帳戶金額 ÷ factor ÷ 12
+    function calcMonthlyPension(fund, lifeYearDecimal) {
+        if (lifeYearDecimal <= 0 || fund <= 0) return 0;
+        const a = 1 - Math.pow(1 / (1 + PENSION_RATE), lifeYearDecimal);
+        const b = Math.pow((1 + PENSION_RATE), 1 / 12);
+        const c = 12 * (b - 1);
+        const factor = (a / c) * b;
+        return Math.round(fund / factor / 12);
+    }
+
+    // 依請領年齡取平均餘命（整數：顯示用；小數：計算用）
+    function getLifeExpectancy(claimAge) {
+        if (claimAge < 60) return null;
+        const idx = claimAge >= 85 ? 25 : Math.min(claimAge - 60, 25);
+        return { display: ex1[idx], precise: exs[idx] };
+    }
+
+    // 保留 LifeExpectancyTable 名稱供舊有顯示邏輯相容（整數顯示用）
+    function getLifeExpDisplay(claimAge) {
+        const le = getLifeExpectancy(claimAge);
+        return le ? le.display : '--';
+    }
     let dataFromStage1 = { laboMonthly: 0, pensionMonthly: 0, claimAge: 0, f1: 0, f2: 0, onceAmt: '', lifeExp: 0, seniority: '' };
     let stage2Data = { need: 0, existing: 0, gap: 0 };
 
@@ -1171,7 +1225,34 @@
         document.getElementById('dispTotalM').innerText = totalM % 12;
     }
 
-    // 勞工保險投保薪資分級表（月薪資總額上限 → 月投保薪資）
+    // 預計請領年齡即時聯動（同官方邏輯）
+    function onClaimAgeInput() {
+        const ageVal = parseInt(document.getElementById('claimAgeYear').value);
+        const after60Y = document.getElementById('yearsAfter60');
+        const after60M = document.getElementById('monthsAfter60');
+        const divPensionYear = document.getElementById('divPensionYear');
+
+        if (!isNaN(ageVal) && ageVal < 60) {
+            // 未滿60歲：鎖住60歲後年資欄位並歸零
+            after60Y.disabled = true;
+            after60M.disabled = true;
+            after60Y.value = '';
+            after60M.value = '0';
+            // 顯示「預估請領年限」欄位
+            divPensionYear.classList.remove('hidden');
+        } else {
+            // 60歲以上：開放60歲後年資欄位
+            after60Y.disabled = false;
+            after60M.disabled = false;
+            // 隱藏「預估請領年限」欄位並清空
+            divPensionYear.classList.add('hidden');
+            document.getElementById('txbPensionYear').value = '';
+        }
+        updateTotalSeniority();
+        updateLegalAge();
+    }
+
+
     // 依 114年11月21日勞動部令，自115年1月1日施行
     const InsuranceSalaryGrades = [
         { max: 29500,  insured: 29500 },
@@ -1209,78 +1290,213 @@
 
         if (!birthYear || !claimY) { alert("請填妥資料。"); return; }
 
-        // 對照投保薪資分級表
+        // 出生年度字元長度限制（民國年最多3碼）
+        if (document.getElementById('birthYear').value.length > 3) {
+            alert("出生年度（民國）請勿超過3位數。"); return;
+        }
+        // 請領年齡字元長度限制（最多3碼）
+        if (document.getElementById('claimAgeYear').value.length > 3) {
+            alert("預計請領年齡請勿超過3位數。"); return;
+        }
+        // 60歲前年資上限99年
+        if (yB > 99) { alert("滿60歲前保險年資不可超過99年。"); return; }
+
+        // 60歲以上：60歲後年資年數為必填（同官方邏輯，空白須報錯）
+        if (claimY >= 60) {
+            const after60Val = document.getElementById('yearsAfter60').value.trim();
+            if (after60Val === '') {
+                alert("請填寫「滿 60 歲後之保險年資」年數（無年資請填 0）。");
+                document.getElementById('yearsAfter60').focus();
+                return;
+            }
+        }
+
+        // 未滿60歲時，預估請領年限為必填
+        if (claimY < 60) {
+            const pensionYearVal = parseInt(document.getElementById('txbPensionYear').value) || 0;
+            if (pensionYearVal < 1) {
+                alert("未滿 60 歲請填寫「預估請領年限」後，才能進行試算。");
+                document.getElementById('txbPensionYear').focus();
+                return;
+            }
+        }
+
+        // ⚠️ [待討論 - 第四項] 目前假設使用者輸入「月薪資總額」並自動換算至投保薪資級距
+        // 官方邏輯是使用者直接填入已知的「月投保薪資」，不做分級換算
+        // 待確認欄位設計後決定是否改為直接使用輸入值（同官方）
         const avgSalary60 = toInsuredSalary(rawSalary60);
         const avgSalary3y = toInsuredSalary(rawSalary3y);
 
         document.getElementById('placeholderMsg').classList.add('hidden');
         document.getElementById('realResults').classList.remove('hidden');
 
+        // 清空所有警語
+        ['msgOnce','msgOldPay','msgPension'].forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.add('hidden');
+            el.innerHTML = '';
+        });
+        document.getElementById('msgPensionUnder60').style.display = 'none';
+
+        // ── 年資計算 ──
         const totalMonthsAll = mB + mA;
         const yearPart = (yB + yA) + Math.floor(totalMonthsAll / 12);
         const seniorityDecimal = yearPart + (Math.round(((totalMonthsAll % 12) / 12) * 100) / 100);
         const seniorityStr = yearPart + ' 年 ' + (totalMonthsAll % 12) + ' 月';
+        const totalYear = yearPart;
         const legalAge = (birthYear <= 46) ? 60 : (birthYear == 47 ? 61 : (birthYear == 48 ? 62 : (birthYear == 49 ? 63 : (birthYear == 50 ? 64 : 65))));
 
-        // 展延/減給比率：每年 ±4%，上限 ±5 年（即 ±20%）
+        // ── 展延/減給比率 ──
         const rawAdjYears = ((claimY - legalAge) * 12 + claimM) / 12;
-        const adjYears = Math.max(-5, Math.min(5, rawAdjYears)); // 限制在 -5 ~ +5 年
-        const adjRate = Math.round(adjYears * 4) / 100;           // 每年 4%，四捨五入
-        const finalMultiplier = 1 + adjRate;                      // 範圍：0.80 ~ 1.20
+        const adjYears = Math.max(-5, Math.min(5, rawAdjYears));
+        const adjRate = parseFloat((adjYears * 0.04).toFixed(2));
+        const finalMultiplier = 1 + adjRate;
 
-        const f1 = Math.round(((avgSalary60 * seniorityDecimal * 0.00775) + 3000) * finalMultiplier);
-        const f2 = Math.round((avgSalary60 * seniorityDecimal * 0.0155) * finalMultiplier);
-        const betterLabo = Math.max(f1, f2);
+        // ═══════════════════════════════════
+        // A. 一次請領老年給付
+        // ═══════════════════════════════════
+        let onetimeCal = true;
+        // 資格判斷（年齡×年資矩陣，同官方）
+        if (claimY < 50 ||
+            (claimY >= 50 && claimY < 55 && totalYear < 25) ||
+            (claimY >= 55 && claimY < 60 && totalYear < 15) ||
+            (claimY >= 60 && totalYear < 1)) {
+            onetimeCal = false;
+            const msgOnceEl = document.getElementById('msgOnce');
+            msgOnceEl.innerHTML = '⚠️ 依您所輸入的年齡與年資，不符合一次請領老年給付條件。';
+            msgOnceEl.classList.remove('hidden');
+            document.getElementById('resOnce').innerText = '--';
+        }
 
-        document.getElementById('resFormula1').innerText = f1.toLocaleString();
-        document.getElementById('resFormula2').innerText = f2.toLocaleString();
-        document.getElementById('formula1Container').classList.toggle('is-winner', f1 >= f2);
-        document.getElementById('formula2Container').classList.toggle('is-winner', f2 > f1);
-
-        // 一次請領給付計算（官方原始碼邏輯，使用 efv 月份對照表）
-        const efv = [0, 0.08, 0.17, 0.25, 0.33, 0.42, 0.5, 0.58, 0.67, 0.75, 0.83, 0.92];
-        let oA = yB, oE = mB, oB = yA, oF = mA;
-        let q_money = 0;
-
-        if (oB === 0 && oF === 0) {
-            // 只有60歲前年資
-            const Ev = efv[oE];
-            if (oA < 15)          q_money = (oA + Ev) * avgSalary3y;
-            else if (oA < 30)     q_money = (15 + parseFloat(((oA + Ev - 15).toFixed(2)) * 2)) * avgSalary3y;
-            else                  q_money = 45 * avgSalary3y;
-        } else {
-            // 有60歲後年資
-            if (oA >= 30) { oA = 30; oE = 0; }
-            if (oB >= 5)  { oB = 5;  oF = 0; }
-            let Ey, Em;
-            if (oE + oF >= 12) {
-                Ey = oA + oB + 1;
-                Em = efv[oE + oF - 12];
+        if (onetimeCal) {
+            const efv = [0, 0.08, 0.17, 0.25, 0.33, 0.42, 0.5, 0.58, 0.67, 0.75, 0.83, 0.92];
+            let oA = yB, oE = mB, oB = yA, oF = mA;
+            let q_money = 0;
+            if (oB === 0 && oF === 0) {
+                const Ev = efv[oE];
+                if (oA < 15)          q_money = (oA + Ev) * avgSalary3y;
+                else if (oA < 30)     q_money = (15 + parseFloat(((oA + Ev - 15).toFixed(2)) * 2)) * avgSalary3y;
+                else                  q_money = 45 * avgSalary3y;
             } else {
-                Ey = oA + oB;
-                Em = efv[oE + oF] !== undefined ? efv[oE + oF] : 0;
+                if (oA >= 30) { oA = 30; oE = 0; }
+                if (oB >= 5)  { oB = 5;  oF = 0; }
+                let Ey, Em;
+                if (oE + oF >= 12) {
+                    Ey = oA + oB + 1;
+                    Em = efv[oE + oF - 12];
+                } else {
+                    Ey = oA + oB;
+                    Em = efv[oE + oF] !== undefined ? efv[oE + oF] : 0;
+                }
+                if ((Ey + Em) >= 15) {
+                    const Eym = 15 + parseFloat(((Ey + Em) - 15).toFixed(2)) * 2;
+                    q_money = (Eym >= 50) ? 50 * avgSalary3y : Eym * avgSalary3y;
+                } else {
+                    q_money = (Ey + Em) * avgSalary3y;
+                }
             }
-            if ((Ey + Em) >= 15) {
-                const Eym = 15 + parseFloat(((Ey + Em) - 15).toFixed(2)) * 2;
-                q_money = (Eym >= 50) ? 50 * avgSalary3y : Eym * avgSalary3y;
+            document.getElementById('resOnce').innerText = Math.round(q_money).toLocaleString() + " 元";
+            // 98年前年資靜態提示（固定顯示，同官方）
+            const msgOnceEl = document.getElementById('msgOnce');
+            msgOnceEl.innerHTML = '📌 98 年 1 月 1 日前有保險年資者，始可請領一次請領老年給付。';
+            msgOnceEl.classList.remove('hidden');
+        }
+
+        // ═══════════════════════════════════
+        // B. 老年年金給付
+        // ═══════════════════════════════════
+        let oldpayCal = true;
+        const msgOldPayEl = document.getElementById('msgOldPay');
+
+        // 判斷一：提前超過5年
+        if ((legalAge - claimY) > 5) {
+            oldpayCal = false;
+            msgOldPayEl.innerHTML = '❌ 不符合老年年金給付條件【最多只能提前 5 年，請領減額老年年金】。';
+            msgOldPayEl.classList.remove('hidden');
+        }
+        // 判斷二：年資不足15年
+        else if (totalYear < 15) {
+            oldpayCal = false;
+            msgOldPayEl.innerHTML = '❌ 不符合老年年金給付條件【保險年資需滿 15 年】。';
+            msgOldPayEl.classList.remove('hidden');
+        }
+
+        if (oldpayCal) {
+            const f1 = Math.round(((avgSalary60 * seniorityDecimal * 0.00775) + 3000) * finalMultiplier);
+            const f2 = Math.round((avgSalary60 * seniorityDecimal * 0.0155) * finalMultiplier);
+            document.getElementById('resFormula1').innerText = f1.toLocaleString();
+            document.getElementById('resFormula2').innerText = f2.toLocaleString();
+            document.getElementById('formula1Container').classList.toggle('is-winner', f1 >= f2);
+            document.getElementById('formula2Container').classList.toggle('is-winner', f2 > f1);
+            // 儲存給後續使用
+            window._f1 = f1; window._f2 = f2;
+        } else {
+            document.getElementById('resFormula1').innerText = '--';
+            document.getElementById('resFormula2').innerText = '--';
+            document.getElementById('formula1Container').classList.remove('is-winner');
+            document.getElementById('formula2Container').classList.remove('is-winner');
+            window._f1 = 0; window._f2 = 0;
+        }
+
+        // ═══════════════════════════════════
+        // C. 勞工退休金月退
+        // ═══════════════════════════════════
+        let monthlyFund = 0;
+        const lifeExp = getLifeExpectancy(claimY);
+        const lifeExpDisplay = lifeExp ? lifeExp.display : '--';
+
+        // 判斷：年資不足15年 → A類，不計算
+        if (totalYear < 15) {
+            document.getElementById('resMonthlyPension').innerText = '--';
+            document.getElementById('resQuarterlyPension').innerText = '--';
+            const msgPensionEl = document.getElementById('msgPension');
+            msgPensionEl.innerHTML = '❌ 工作年資未滿 15 年，不符合請領月退休金條件。';
+            msgPensionEl.classList.remove('hidden');
+        } else {
+            // 未滿60歲：使用使用者填入的預估請領年限
+            if (claimY < 60) {
+                const pensionYearVal = parseInt(document.getElementById('txbPensionYear').value) || 0;
+                if (pensionYearVal < 1) {
+                    alert("未滿 60 歲請填寫「預估請領年限」。");
+                    return;
+                }
+                monthlyFund = Math.round(
+                    (() => {
+                        if (pensionYearVal <= 0 || fund <= 0) return 0;
+                        const a = 1 - Math.pow(1 / (1 + PENSION_RATE), pensionYearVal);
+                        const b = Math.pow((1 + PENSION_RATE), 1 / 12);
+                        const c = 12 * (b - 1);
+                        const factor = (a / c) * b;
+                        return fund / factor / 12;
+                    })()
+                );
+                document.getElementById('resMonthlyPension').innerText = monthlyFund.toLocaleString();
+                document.getElementById('resQuarterlyPension').innerText = (monthlyFund * 3).toLocaleString();
+                // 平均餘命顯示使用者填入的年限
+                document.getElementById('resLife').innerText = pensionYearVal + ' 年';
+                // B類警語：照算但提示
+                document.getElementById('msgPensionUnder60').style.display = 'block';
             } else {
-                q_money = (Ey + Em) * avgSalary3y;
+                // 60歲以上：用整數餘命（同官方 fee26_js 邏輯）
+                monthlyFund = lifeExp ? calcMonthlyPension(fund, lifeExp.display) : 0;
+                document.getElementById('resMonthlyPension').innerText = monthlyFund.toLocaleString();
+                document.getElementById('resQuarterlyPension').innerText = (monthlyFund * 3).toLocaleString();
             }
         }
-        const onceAmt = Math.round(q_money).toLocaleString() + " 元";
-        document.getElementById('resOnce').innerText = onceAmt;
 
-        let factor = OfficialFactors[claimY] || 205.0802;
-        const monthlyFund = Math.round(fund / factor);
-        document.getElementById('resMonthlyPension').innerText = monthlyFund.toLocaleString();
-        document.getElementById('resQuarterlyPension').innerText = (monthlyFund * 3).toLocaleString();
         document.getElementById('resClaimAge').innerText = claimY + " 歲";
-        const lifeExp = LifeExpectancyTable[claimY] || '--';
-        document.getElementById('resLife').innerText = lifeExp + " 年";
+        if (claimY >= 60) {
+            document.getElementById('resLife').innerText = lifeExpDisplay + " 年";
+        }
+
+        const f1Final = window._f1 || 0;
+        const f2Final = window._f2 || 0;
+        const betterLabo = Math.max(f1Final, f2Final);
+        const onceAmt = document.getElementById('resOnce').innerText;
 
         dataFromStage1 = {
             laboMonthly: betterLabo, pensionMonthly: monthlyFund, claimAge: claimY,
-            f1, f2, onceAmt, lifeExp,
+            f1: f1Final, f2: f2Final, onceAmt, lifeExp: lifeExpDisplay,
             seniority: seniorityStr,
             birthYear,
             avgSalary60: rawSalary60, avgSalary60Insured: avgSalary60,
@@ -1295,7 +1511,16 @@
         if (dataFromStage1.claimAge === 0) { alert("請先完成第一階段試算。"); return; }
         hideAll(); document.getElementById('stage2').classList.remove('hidden'); setActive('tab2');
         document.getElementById('imgRetireAge').innerText = dataFromStage1.claimAge;
-        document.getElementById('imgLaboMonthly').innerText = dataFromStage1.laboMonthly.toLocaleString();
+        // 勞保給付：有年金顯示月金額，無年金顯示一次給付
+        const hasAnnuity = (dataFromStage1.f1 > 0 || dataFromStage1.f2 > 0);
+        if (hasAnnuity) {
+            document.getElementById('imgLaboLabel').innerText = '勞保年金每月';
+            document.getElementById('imgLaboMonthly').innerText = dataFromStage1.laboMonthly.toLocaleString() + ' 元';
+        } else {
+            document.getElementById('imgLaboLabel').innerText = '勞保一次給付';
+            const onceStr = (dataFromStage1.onceAmt || '').replace(/[^\d]/g, '');
+            document.getElementById('imgLaboMonthly').innerText = (parseInt(onceStr) || 0).toLocaleString() + ' 元';
+        }
         document.getElementById('imgPensionQuart').innerText = (dataFromStage1.pensionMonthly * 3).toLocaleString();
         updatePlanningLogic();
     }
@@ -1308,11 +1533,14 @@
     function setActive(id) { document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 
     function updateLegalAge() {
-        const by = parseInt(document.getElementById('birthYear').value) || 0;
-        if (!by) { document.getElementById('legalAgeHint').classList.add('hidden'); return; }
+        const byEl = document.getElementById('birthYear');
+        const hint = document.getElementById('legalAgeHint');
+        const valEl = document.getElementById('legalAgeVal');
+        const by = parseInt(byEl ? byEl.value : '') || 0;
+        if (!by) { if (hint) hint.style.display = 'none'; return; }
         const age = by <= 46 ? 60 : by == 47 ? 61 : by == 48 ? 62 : by == 49 ? 63 : by == 50 ? 64 : 65;
-        document.getElementById('legalAgeVal').innerText = age;
-        document.getElementById('legalAgeHint').classList.remove('hidden');
+        if (valEl) valEl.innerText = age;
+        if (hint) hint.style.display = 'block';
     }
 
     function showSelfPrep() {
@@ -1335,7 +1563,21 @@
         const otherN = parseFloat(document.getElementById('otherNeed').value) || 0;
         const totalDemandVal = Math.round(mLiving + loan + med + dream + otherN);
 
-        const govTotal = (dataFromStage1.laboMonthly + dataFromStage1.pensionMonthly) * 12 * yearsUntil85 / 10000;
+        // 勞保給付：有年金（f1或f2 > 0）→ 用擇優月金額年化至85歲；無年金 → 直接用一次給付金額
+        const hasAnnuity = (dataFromStage1.f1 > 0 || dataFromStage1.f2 > 0);
+        let laboGov = 0;
+        if (hasAnnuity) {
+            // 擇優給付月金額 × 12個月 × 存活年數，轉萬元
+            laboGov = dataFromStage1.laboMonthly * 12 * yearsUntil85 / 10000;
+        } else {
+            // 一次給付：直接取金額（已是元），轉萬元
+            const onceStr = (dataFromStage1.onceAmt || '').replace(/[^\d]/g, '');
+            laboGov = (parseInt(onceStr) || 0) / 10000;
+        }
+        // 勞退：季發（月退×3）×4季 × 存活年數，轉萬元
+        const laboAnnual = dataFromStage1.laboMonthly * 12;
+        const pensionAnnual = dataFromStage1.pensionMonthly * 3 * 4;
+        const govTotal = laboGov + (pensionAnnual * yearsUntil85 / 10000);
         const personal = parseFloat(document.getElementById('personalAsset').value) || 0;
         const totalExistingVal = Math.round(govTotal + personal);
         const gapVal = Math.max(0, totalDemandVal - totalExistingVal);
@@ -1411,8 +1653,17 @@
         setText('rpt-salary60', dataFromStage1.avgSalary60Insured ? dataFromStage1.avgSalary60Insured.toLocaleString() + ' 元（投保薪資）' : '--');
         setText('rpt-salary3y', dataFromStage1.avgSalary3yInsured ? dataFromStage1.avgSalary3yInsured.toLocaleString() + ' 元（投保薪資）' : '--');
         setText('rpt-fund', dataFromStage1.fund ? dataFromStage1.fund.toLocaleString() : '--');
-        setText('rpt-f1', dataFromStage1.f1 ? dataFromStage1.f1.toLocaleString() : '--');
-        setText('rpt-f2', dataFromStage1.f2 ? dataFromStage1.f2.toLocaleString() : '--');
+
+        // 年金欄位：無資格時顯示說明文字
+        const hasAnnuity = (dataFromStage1.f1 > 0 || dataFromStage1.f2 > 0);
+        if (hasAnnuity) {
+            setText('rpt-f1', dataFromStage1.f1 ? dataFromStage1.f1.toLocaleString() : '--');
+            setText('rpt-f2', dataFromStage1.f2 ? dataFromStage1.f2.toLocaleString() : '--');
+        } else {
+            setText('rpt-f1', '不符合年金給付條件');
+            setText('rpt-f2', '不符合年金給付條件');
+        }
+
         setText('rpt-once', dataFromStage1.onceAmt || '--');
         setText('rpt-monthly-pension', dataFromStage1.pensionMonthly ? dataFromStage1.pensionMonthly.toLocaleString() : '--');
         setText('rpt-quarterly-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly * 3).toLocaleString() : '--');
@@ -1455,8 +1706,18 @@
         setText('rpt-d-dream', stage2Data.dream || 0);
         setText('rpt-d-other', stage2Data.otherN || 0);
         setText('rpt-d-total', need.toLocaleString());
-        setText('rpt-e-labo', dataFromStage1.laboMonthly.toLocaleString());
-        setText('rpt-e-pension', (dataFromStage1.pensionMonthly * 3).toLocaleString());
+        // 勞保給付：有年金 → 月金額；無年金 → 一次給付金額
+        if (hasAnnuity) {
+            setText('rpt-e-labo-label', '● 勞保年金（月）');
+            setText('rpt-e-labo', dataFromStage1.laboMonthly ? dataFromStage1.laboMonthly.toLocaleString() : '0');
+            setText('rpt-e-labo-unit', '元／月');
+        } else {
+            setText('rpt-e-labo-label', '● 勞保一次給付');
+            const onceStr = (dataFromStage1.onceAmt || '').replace(/[^\d]/g, '');
+            setText('rpt-e-labo', (parseInt(onceStr) || 0).toLocaleString());
+            setText('rpt-e-labo-unit', '元（一次）');
+        }
+        setText('rpt-e-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly * 3).toLocaleString() : '0');
         setText('rpt-e-gov-total', (stage2Data.govTotal || 0).toLocaleString());
         setText('rpt-e-personal', (stage2Data.personal || 0).toLocaleString());
         setText('rpt-e-total', existing.toLocaleString());
@@ -1527,8 +1788,17 @@
         setText('rpt-salary60', dataFromStage1.avgSalary60Insured ? dataFromStage1.avgSalary60Insured.toLocaleString() + ' 元' : '--');
         setText('rpt-salary3y', dataFromStage1.avgSalary3yInsured ? dataFromStage1.avgSalary3yInsured.toLocaleString() + ' 元' : '--');
         setText('rpt-fund', dataFromStage1.fund ? dataFromStage1.fund.toLocaleString() : '--');
-        setText('rpt-f1', dataFromStage1.f1 ? dataFromStage1.f1.toLocaleString() : '--');
-        setText('rpt-f2', dataFromStage1.f2 ? dataFromStage1.f2.toLocaleString() : '--');
+
+        // 年金欄位：無資格時顯示說明文字
+        const hasAnnuityP = (dataFromStage1.f1 > 0 || dataFromStage1.f2 > 0);
+        if (hasAnnuityP) {
+            setText('rpt-f1', dataFromStage1.f1 ? dataFromStage1.f1.toLocaleString() : '--');
+            setText('rpt-f2', dataFromStage1.f2 ? dataFromStage1.f2.toLocaleString() : '--');
+        } else {
+            setText('rpt-f1', '不符合年金給付條件');
+            setText('rpt-f2', '不符合年金給付條件');
+        }
+
         setText('rpt-once', dataFromStage1.onceAmt || '--');
         setText('rpt-monthly-pension', dataFromStage1.pensionMonthly ? dataFromStage1.pensionMonthly.toLocaleString() : '--');
         setText('rpt-quarterly-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly * 3).toLocaleString() : '--');
@@ -1569,7 +1839,17 @@
         setText('rpt-d-dream', stage2Data.dream || 0);
         setText('rpt-d-other', stage2Data.otherN || 0);
         setText('rpt-d-total', need.toLocaleString());
-        setText('rpt-e-labo', dataFromStage1.laboMonthly ? dataFromStage1.laboMonthly.toLocaleString() : '0');
+        // 勞保給付：有年金 → 月金額；無年金 → 一次給付金額
+        if (hasAnnuityP) {
+            setText('rpt-e-labo-label', '● 勞保年金（月）');
+            setText('rpt-e-labo', dataFromStage1.laboMonthly ? dataFromStage1.laboMonthly.toLocaleString() : '0');
+            setText('rpt-e-labo-unit', '元／月');
+        } else {
+            setText('rpt-e-labo-label', '● 勞保一次給付');
+            const onceStrP = (dataFromStage1.onceAmt || '').replace(/[^\d]/g, '');
+            setText('rpt-e-labo', (parseInt(onceStrP) || 0).toLocaleString());
+            setText('rpt-e-labo-unit', '元（一次）');
+        }
         setText('rpt-e-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly * 3).toLocaleString() : '0');
         setText('rpt-e-gov-total', (stage2Data.govTotal || 0).toLocaleString());
         setText('rpt-e-personal', (stage2Data.personal || 0).toLocaleString());
