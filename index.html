@@ -112,22 +112,20 @@
     <div id="stage1" class="flex flex-col lg:flex-row fade-in" style="min-height:520px;">
 
         <!-- 左側：QR Code + 連結 -->
-        <div class="lg:w-1/2 p-6 border-r border-gray-200 bg-gray-50 flex flex-col items-center justify-center gap-5">
-            <div class="text-center">
-                <p class="text-sm font-black text-bli-green mb-1 tracking-wide">STEP 1 — 前往勞保局官方試算</p>
-                <div class="bg-amber-50 border-2 border-amber-400 rounded-xl px-4 py-3 text-center w-full">
-                    <p class="text-sm font-black text-amber-700 leading-relaxed">
-                        📋 請掃描下方 QR Code 或點擊連結，前往勞保局官方頁面完成試算，再將結果填入<span class="text-bli-orange underline underline-offset-2">右側欄位</span>。
-                    </p>
-                </div>
+        <div class="lg:w-1/2 p-6 border-r border-gray-200 bg-gray-50 flex flex-col items-center justify-start gap-4 pt-6">
+            <p class="text-sm font-black text-bli-green tracking-wide">STEP 1 — 前往勞保局官方試算</p>
+            <div class="bg-amber-50 border-2 border-amber-400 rounded-xl px-4 py-3 text-center w-full">
+                <p class="text-sm font-black text-amber-700 leading-relaxed">
+                    📋 請掃描下方 QR Code 或點擊連結，前往勞保局官方頁面完成試算，<br>再將結果填入<span class="text-bli-orange underline underline-offset-2">右側欄位</span>。
+                </p>
             </div>
 
             <!-- QR Code -->
-            <div class="bg-white p-4 rounded-2xl shadow-md border-2 border-green-100 inline-block">
+            <div class="bg-white p-3 rounded-2xl shadow-md border-2 border-green-100 inline-block">
                 <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://www.bli.gov.tw/0109187.html&color=00847b&bgcolor=ffffff"
+                    src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://www.bli.gov.tw/0109187.html&color=00847b&bgcolor=ffffff"
                     alt="勞保局試算 QR Code"
-                    width="200" height="200"
+                    width="180" height="180"
                     class="rounded-lg block"
                 />
             </div>
