@@ -171,7 +171,7 @@
                         <!-- 一次請領 -->
                         <div>
                             <label class="label-text text-gray-500">1. 可一次請領老年給付（元）</label>
-                            <input type="number" id="manualOnce" placeholder="請填入官網試算金額" class="input-box" oninput="syncManualToStage1()">
+                            <input type="number" id="manualOnce" min="0" placeholder="請填入官網試算金額" class="input-box" oninput="syncManualToStage1()">
                         </div>
                         <!-- 年金兩式 -->
                         <div>
@@ -179,11 +179,11 @@
                             <div class="grid grid-cols-2 gap-2 pl-2">
                                 <div>
                                     <label class="label-text text-[10px] text-gray-400">第一式計算金額（元）</label>
-                                    <input type="number" id="manualF1" placeholder="第一式" class="input-box" oninput="syncManualToStage1()">
+                                    <input type="number" id="manualF1" min="0" placeholder="第一式" class="input-box" oninput="syncManualToStage1()">
                                 </div>
                                 <div>
                                     <label class="label-text text-[10px] text-gray-400">第二式計算金額（元）</label>
-                                    <input type="number" id="manualF2" placeholder="第二式" class="input-box" oninput="syncManualToStage1()">
+                                    <input type="number" id="manualF2" min="0" placeholder="第二式" class="input-box" oninput="syncManualToStage1()">
                                 </div>
                             </div>
                         </div>
@@ -203,7 +203,7 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="label-text text-gray-500">1. 預計申請年齡（歲）</label>
-                                <input type="number" id="manualClaimAge" placeholder="例：65" class="input-box" oninput="syncManualToStage1()">
+                                <input type="number" id="manualClaimAge" min="0" placeholder="例：65" class="input-box" oninput="syncManualToStage1()">
                             </div>
                             <div>
                                 <label class="label-text text-gray-400">平均餘命（自動帶入）</label>
@@ -213,11 +213,11 @@
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <label class="label-text text-gray-500">2. 月退休金金額（元）</label>
-                                <input type="number" id="manualMonthly" placeholder="月退金額" class="input-box" oninput="syncManualToStage1()">
+                                <input type="number" id="manualMonthly" min="0" placeholder="月退金額" class="input-box" oninput="syncManualToStage1()">
                             </div>
                             <div>
                                 <label class="label-text text-gray-500">3. 季發月退休金金額（元）</label>
-                                <input type="number" id="manualQuarterly" placeholder="季發金額" class="input-box" oninput="syncManualToStage1()">
+                                <input type="number" id="manualQuarterly" min="0" placeholder="季發金額" class="input-box" oninput="syncManualToStage1()">
                             </div>
                         </div>
                     </div>
@@ -249,11 +249,11 @@
                 <div class="planning-card border-l-4 border-l-red-600">
                     <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">需求：退休後我需要多少錢？</h3>
                     <ul class="space-y-1.5 font-bold text-slate-700">
-                        <li class="flex items-center justify-between"><span>● 每個月食衣住行費用 <span class="text-[9px] font-black text-red-400 bg-red-50 border border-red-200 rounded px-1.5 py-0.5 ml-1">每月</span></span><div class="flex items-center gap-1"><input type="number" id="monthlyLiving" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
-                        <li class="flex items-center justify-between"><span>● 退休後未償貸款</span><div class="flex items-center gap-1"><input type="number" id="loans" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
-                        <li class="flex items-center justify-between"><span>● 緊急 / 醫療預備金</span><div class="flex items-center gap-1"><input type="number" id="medicalRes" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
-                        <li class="flex items-center justify-between"><span>● 旅遊 / 夢想基金</span><div class="flex items-center gap-1"><input type="number" id="dreamFund" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
-                        <li class="flex items-center justify-between"><span>● 其他</span><div class="flex items-center gap-1"><input type="number" id="otherNeed" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
+                        <li class="flex items-center justify-between"><span>● 每個月食衣住行費用 <span class="text-[9px] font-black text-red-400 bg-red-50 border border-red-200 rounded px-1.5 py-0.5 ml-1">每月</span></span><div class="flex items-center gap-1"><input type="number" id="monthlyLiving" min="0" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
+                        <li class="flex items-center justify-between"><span>● 退休後未償貸款</span><div class="flex items-center gap-1"><input type="number" id="loans" min="0" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
+                        <li class="flex items-center justify-between"><span>● 緊急 / 醫療預備金</span><div class="flex items-center gap-1"><input type="number" id="medicalRes" min="0" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
+                        <li class="flex items-center justify-between"><span>● 旅遊 / 夢想基金</span><div class="flex items-center gap-1"><input type="number" id="dreamFund" min="0" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
+                        <li class="flex items-center justify-between"><span>● 其他</span><div class="flex items-center gap-1"><input type="number" id="otherNeed" min="0" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
                     </ul>
                     <div class="mt-1 pt-1 border-t border-red-100 font-black flex items-center justify-between text-slate-900">
                         <span class="text-[10px] font-bold text-red-400 bg-red-50 border border-red-100 rounded px-1.5 py-0.5">以退休後存活至 85 歲計算</span>
@@ -265,7 +265,7 @@
                     <ul class="space-y-1.5 font-bold text-slate-700">
                         <li>● <span id="imgLaboLabel">勞保年金每月</span> <span id="imgLaboMonthly" class="text-blue-800 font-black text-base">OOO</span></li>
                         <li>● 勞退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span></li>
-                        <li class="flex items-center justify-between"><span>● 其他已準備 <span class="text-[9px] font-normal block opacity-50">(存款/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
+                        <li class="flex items-center justify-between"><span>● 其他已準備 <span class="text-[9px] font-normal block opacity-50">(存款/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" min="0" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
                     </ul>
                     <div class="mt-1 pt-1 border-t border-blue-100 font-black flex items-center justify-between text-slate-900">
                         <span class="text-[10px] font-bold text-blue-400 bg-blue-50 border border-blue-100 rounded px-1.5 py-0.5">以退休後存活至 85 歲計算</span>
@@ -323,50 +323,135 @@
 
     <!-- 第三階段 -->
     <div id="stage3" class="hidden flex flex-col lg:flex-row fade-in bg-[#f0faf7]">
+
+        <!-- 左側：預算輸入 -->
         <div class="lg:w-1/2 p-6 md:p-8 border-r border-gray-100 flex flex-col justify-center items-center text-center">
-            <div class="max-w-lg space-y-6">
-                <div class="space-y-1"><h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">如果有這樣的方案來幫助我們</h2><h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">準備自己的退休金</h2></div>
+            <div class="max-w-lg space-y-6 w-full">
+                <div class="space-y-1">
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">如果有這樣的方案來幫助我們</h2>
+                    <h2 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">準備自己的退休金</h2>
+                </div>
+
+                <!-- 預算輸入 -->
                 <div class="space-y-4">
-                    <p class="text-lg md:text-xl font-bold text-slate-700 leading-relaxed">請問在不影響現在生活的前題下，<br>您每個月願意提撥多少</p>
+                    <p class="text-lg md:text-xl font-bold text-slate-700 leading-relaxed">請問在不影響現在生活的前提下，<br>您每個月願意提撥多少</p>
                     <div class="flex items-center justify-center gap-3">
-                        <input type="number" id="finalBudgetChoice" oninput="updateStage3Visuals()" placeholder="0" class="w-40 text-center text-4xl font-black text-bli-green border-b-4 border-bli-green bg-transparent focus:outline-none py-1">
+                        <input type="number" id="finalBudgetChoice" min="0" oninput="updateStage3Visuals()" placeholder="0"
+                               class="w-40 text-center text-4xl font-black text-bli-green border-b-4 border-bli-green bg-transparent focus:outline-none py-1">
                         <span class="text-3xl font-black text-slate-800">元</span>
                     </div>
                     <p class="text-lg md:text-xl font-bold text-slate-700">來投資自己未來的退休生活？</p>
                 </div>
-                <div class="space-y-3 pt-4 border-t border-emerald-100">
+
+                <!-- 累積結果卡片（輸入後顯示） -->
+                <div id="budgetResultPanel" class="hidden space-y-3 pt-4 border-t border-emerald-100">
+                    <p class="text-sm font-bold text-slate-500">以您的提撥預算，搭配第二頁設定的 <span id="s3PrepYearsDisplay" class="text-bli-green font-black">??</span> 年準備期</p>
+
+                    <!-- 累積總額 -->
+                    <div class="bg-white rounded-2xl shadow-md border border-emerald-100 px-5 py-4">
+                        <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">預計可累積退休金</p>
+                        <p class="text-3xl font-black text-bli-green"><span id="s3Accumulate">0</span> <span class="text-lg">萬元</span></p>
+                    </div>
+
+                    <!-- 達成率變化 -->
+                    <div class="bg-white rounded-2xl shadow-md border border-amber-100 px-5 py-4">
+                        <p class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-2">退休計畫達成率提升</p>
+                        <div class="flex items-center justify-center gap-3 flex-wrap">
+                            <div class="text-center">
+                                <p class="text-xs text-slate-400 mb-0.5">目前</p>
+                                <p class="text-2xl font-black text-slate-400"><span id="s3RatioBefore">0</span>%</p>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d33101" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+                            <div class="text-center">
+                                <p class="text-xs text-bli-orange mb-0.5">加入計畫後</p>
+                                <p class="text-2xl font-black text-bli-orange"><span id="s3RatioAfter">0</span>%</p>
+                            </div>
+                            <div class="bg-orange-50 border border-orange-200 rounded-xl px-3 py-1.5 text-center">
+                                <p class="text-xs text-orange-400 mb-0.5">增加</p>
+                                <p class="text-xl font-black text-bli-orange">+<span id="s3RatioDelta">0</span>%</p>
+                            </div>
+                        </div>
+                        <!-- 進度條 -->
+                        <div class="mt-3 bg-slate-100 rounded-full h-3 overflow-hidden">
+                            <div id="s3ProgressBar" class="h-full rounded-full transition-all duration-700"
+                                 style="width:0%; background:linear-gradient(90deg,#00847b,#34d399);"></div>
+                        </div>
+                        <div class="flex justify-between mt-1">
+                            <span class="text-[10px] text-slate-400">0%</span>
+                            <span class="text-[10px] text-slate-400">100%</span>
+                        </div>
+                    </div>
+
+                    <p class="text-base font-black text-bli-orange italic drop-shadow-sm pt-1">幫助您達成目標將是最棒的事情！</p>
+                </div>
+
+                <!-- 尚未輸入時的提示文字 -->
+                <div id="budgetHint" class="pt-4 border-t border-emerald-100 space-y-2">
                     <p class="text-lg font-bold text-slate-600 leading-relaxed">我將會根據您的想法，<br>給您建議並和您一起討論</p>
                     <p class="text-xl md:text-2xl font-black text-bli-orange italic drop-shadow-sm">幫助您達成目標將是最棒的事情！</p>
                 </div>
+
+                <!-- 返回按鈕 -->
+                <div class="pt-2">
+                    <button onclick="switchToStage1()" class="text-bli-green font-bold flex items-center gap-1 hover:underline mx-auto text-xs opacity-50">
+                        ← 返回修改參數
+                    </button>
+                </div>
             </div>
         </div>
+
+        <!-- 右側：圓柱達成率圖 -->
         <div class="lg:w-1/2 p-6 flex flex-col items-center justify-center relative">
             <div class="flex items-center justify-center gap-6 w-full max-w-2xl">
+                <!-- 圓柱 -->
                 <div class="relative w-44 h-80 flex-shrink-0">
                     <svg viewBox="0 0 120 300" class="w-full h-full overflow-visible">
-                        <defs><linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" /><stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" /></linearGradient></defs>
+                        <defs>
+                            <linearGradient id="waterGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#60a5fa;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+                            </linearGradient>
+                            <linearGradient id="waterGradientAfter" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#34d399;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#00847b;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <!-- 外框 -->
                         <rect x="10" y="20" width="100" height="260" rx="50" fill="#ffffff" stroke="#cbd5e1" stroke-width="2.5" opacity="0.6" />
+                        <!-- 現有水位（藍色） -->
                         <rect id="cylWater" x="10" y="280" width="100" height="0" rx="50" class="gauge-water" />
+                        <!-- 加入計畫後增量水位（綠色） -->
+                        <rect id="cylWaterExtra" x="10" y="280" width="100" height="0" rx="50" fill="url(#waterGradientAfter)" style="transition:all 0.7s ease;" />
+                        <!-- 光澤 -->
                         <rect x="25" y="45" width="12" height="210" rx="6" fill="#fff" opacity="0.4" />
-                        <text x="60" y="155" id="cylPercent" text-anchor="middle" font-size="24" font-weight="900" fill="#333" opacity="0.6">達成 0%</text>
+                        <!-- 百分比文字 -->
+                        <text x="60" y="148" id="cylPercent" text-anchor="middle" font-size="22" font-weight="900" fill="#333" opacity="0.7">達成 0%</text>
+                        <text x="60" y="168" id="cylPercentAfter" text-anchor="middle" font-size="11" font-weight="700" fill="#00847b" opacity="0">加入後 0%</text>
                     </svg>
                 </div>
+
+                <!-- 數據卡片 -->
                 <div class="w-56 space-y-4">
-                    <div class="stat-box bg-red-50/80 border-red-100"><p class="text-[9px] font-bold text-red-400 uppercase tracking-tighter mb-1">退休總需求 (TARGET)</p><p class="text-xl font-black text-red-600"><span id="cylFinalNeed">0</span> 萬</p></div>
-                    <div class="stat-box bg-orange-50/80 border-orange-200 border-dashed"><p class="text-[9px] font-bold text-orange-400 uppercase tracking-tighter mb-1">尚有缺口 (GAP)</p><p class="text-xl font-black text-orange-600"><span id="cylFinalGap">0</span> 萬</p></div>
-                    <div class="stat-box bg-blue-50/80 border-blue-100"><p class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter mb-1">目前已現有 (CURRENT)</p><p class="text-xl font-black text-blue-800"><span id="cylFinalExisting">0</span> 萬</p></div>
+                    <div class="stat-box bg-red-50/80 border-red-100">
+                        <p class="text-[9px] font-bold text-red-400 uppercase tracking-tighter mb-1">退休總需求 (TARGET)</p>
+                        <p class="text-xl font-black text-red-600"><span id="cylFinalNeed">0</span> 萬</p>
+                    </div>
+                    <div class="stat-box bg-orange-50/80 border-orange-200 border-dashed">
+                        <p class="text-[9px] font-bold text-orange-400 uppercase tracking-tighter mb-1">尚有缺口 (GAP)</p>
+                        <p class="text-xl font-black text-orange-600"><span id="cylFinalGap">0</span> 萬</p>
+                    </div>
+                    <div class="stat-box bg-blue-50/80 border-blue-100">
+                        <p class="text-[9px] font-bold text-blue-400 uppercase tracking-tighter mb-1">目前已現有 (CURRENT)</p>
+                        <p class="text-xl font-black text-blue-800"><span id="cylFinalExisting">0</span> 萬</p>
+                    </div>
+                    <!-- 加入計畫後（預算 > 0 時才顯示） -->
+                    <div id="cylAfterCard" class="stat-box bg-emerald-50/80 border-emerald-200 hidden">
+                        <p class="text-[9px] font-bold text-emerald-600 uppercase tracking-tighter mb-1">加入計畫後合計</p>
+                        <p class="text-xl font-black text-bli-green"><span id="cylFinalAfter">0</span> 萬</p>
+                    </div>
                 </div>
             </div>
-            <div class="mt-8 text-center w-full max-w-md no-print">
-                <p class="text-slate-400 font-bold italic text-sm">透過合理的提撥預算，我們能填補這段距離，讓未來更安心。</p>
-                <div class="mt-6 flex flex-col gap-3">
-                    <button onclick="generatePDF()" class="bg-bli-green text-white font-black px-8 py-3 rounded-xl shadow-xl flex items-center justify-center gap-2 hover:scale-105 transition-all text-base border-2 border-white/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        <span>產生個人化退休規劃報告書 (列印/PDF)</span>
-                    </button>
-                    <button onclick="switchToStage1()" class="text-bli-green font-bold flex items-center gap-1 hover:underline mx-auto text-xs opacity-50">返回修改參數</button>
-                </div>
-            </div>
+            <p class="mt-6 text-slate-400 font-bold italic text-sm text-center">透過合理的提撥預算，我們能填補這段距離，讓未來更安心。</p>
         </div>
     </div>
 </div>
@@ -506,7 +591,7 @@
 </div>
 
 <script>
-    let dataFromStage1 = { laboMonthly: 0, pensionMonthly: 0, claimAge: 0, f1: 0, f2: 0, onceAmt: '', lifeExp: 0, seniority: '' };
+    let dataFromStage1 = { laboMonthly: 0, pensionMonthly: 0, pensionQuarterly: 0, claimAge: 0, f1: 0, f2: 0, onceAmt: '', lifeExp: 0, seniority: '' };
     let stage2Data = { need: 0, existing: 0, gap: 0 };
 
     // ── 手動輸入同步（新第一頁）──
@@ -526,22 +611,60 @@
     }
 
     function applyManualInput() {
-        const once = parseInt(document.getElementById('manualOnce').value) || 0;
-        const f1 = parseInt(document.getElementById('manualF1').value) || 0;
-        const f2 = parseInt(document.getElementById('manualF2').value) || 0;
-        const claimAge = parseInt(document.getElementById('manualClaimAge').value) || 0;
-        const monthly = parseInt(document.getElementById('manualMonthly').value) || 0;
-        const quarterly = parseInt(document.getElementById('manualQuarterly').value) || 0;
+        const onceRaw = document.getElementById('manualOnce').value;
+        const f1Raw   = document.getElementById('manualF1').value;
+        const f2Raw   = document.getElementById('manualF2').value;
+        const ageRaw  = document.getElementById('manualClaimAge').value;
+        const mRaw    = document.getElementById('manualMonthly').value;
+        const qRaw    = document.getElementById('manualQuarterly').value;
 
-        if (!claimAge) { alert('請填入「預計申請年齡」後再繼續。'); document.getElementById('manualClaimAge').focus(); return; }
-        if (!monthly && !quarterly && !f1 && !f2 && !once) { alert('請至少填入一項試算結果後再繼續。'); return; }
+        // 必填檢查：所有欄位不得為空
+        const fields = [
+            { raw: onceRaw, label: '可一次請領老年給付', id: 'manualOnce' },
+            { raw: f1Raw,   label: '年金第一式計算金額', id: 'manualF1' },
+            { raw: f2Raw,   label: '年金第二式計算金額', id: 'manualF2' },
+            { raw: ageRaw,  label: '預計申請年齡',       id: 'manualClaimAge' },
+            { raw: mRaw,    label: '月退休金金額',       id: 'manualMonthly' },
+            { raw: qRaw,    label: '季發月退休金金額',   id: 'manualQuarterly' },
+        ];
+        for (const f of fields) {
+            if (f.raw === '' || f.raw === null) {
+                alert(`「${f.label}」為必填欄位，請填入後再繼續。`);
+                document.getElementById(f.id).focus();
+                return;
+            }
+        }
+
+        const once     = parseInt(onceRaw);
+        const f1       = parseInt(f1Raw);
+        const f2       = parseInt(f2Raw);
+        const claimAge = parseInt(ageRaw);
+        const monthly  = parseInt(mRaw);
+        const quarterly = parseInt(qRaw);
+
+        // 負值檢查
+        const numFields = [
+            { val: once,     label: '可一次請領老年給付', id: 'manualOnce' },
+            { val: f1,       label: '年金第一式計算金額', id: 'manualF1' },
+            { val: f2,       label: '年金第二式計算金額', id: 'manualF2' },
+            { val: claimAge, label: '預計申請年齡',       id: 'manualClaimAge' },
+            { val: monthly,  label: '月退休金金額',       id: 'manualMonthly' },
+            { val: quarterly,label: '季發月退休金金額',   id: 'manualQuarterly' },
+        ];
+        for (const f of numFields) {
+            if (f.val < 0) {
+                alert(`「${f.label}」不得為負值，請重新填入。`);
+                document.getElementById(f.id).focus();
+                return;
+            }
+        }
 
         let lifeExpDisplay = '--';
         if (claimAge >= 60) { const idx = Math.min(claimAge - 60, 25); lifeExpDisplay = ex1_life[idx] + ' 年'; }
 
         const betterLabo = Math.max(f1, f2);
         dataFromStage1 = {
-            laboMonthly: betterLabo, pensionMonthly: monthly, claimAge: claimAge,
+            laboMonthly: betterLabo, pensionMonthly: monthly, pensionQuarterly: quarterly, claimAge: claimAge,
             f1: f1, f2: f2, onceAmt: once ? once.toLocaleString() + ' 元' : '--',
             lifeExp: lifeExpDisplay, seniority: '--', birthYear: 0,
             avgSalary60: 0, avgSalary60Insured: 0, avgSalary3y: 0, avgSalary3yInsured: 0,
@@ -564,7 +687,7 @@
             const onceStr = (dataFromStage1.onceAmt || '').replace(/[^\d]/g, '');
             document.getElementById('imgLaboMonthly').innerText = (parseInt(onceStr) || 0).toLocaleString() + ' 元';
         }
-        document.getElementById('imgPensionQuart').innerText = (dataFromStage1.pensionMonthly * 3).toLocaleString();
+        document.getElementById('imgPensionQuart').innerText = (dataFromStage1.pensionQuarterly).toLocaleString();
         updatePlanningLogic();
     }
     function switchToStage3() {
@@ -580,11 +703,11 @@
 
     function updatePlanningLogic() {
         const yearsUntil85 = Math.max(0, 85 - dataFromStage1.claimAge);
-        const mLiving = (parseFloat(document.getElementById('monthlyLiving').value) || 0) * 12 * yearsUntil85;
-        const loan = parseFloat(document.getElementById('loans').value) || 0;
-        const med = parseFloat(document.getElementById('medicalRes').value) || 0;
-        const dream = parseFloat(document.getElementById('dreamFund').value) || 0;
-        const otherN = parseFloat(document.getElementById('otherNeed').value) || 0;
+        const mLiving = Math.max(0, parseFloat(document.getElementById('monthlyLiving').value) || 0) * 12 * yearsUntil85;
+        const loan    = Math.max(0, parseFloat(document.getElementById('loans').value) || 0);
+        const med     = Math.max(0, parseFloat(document.getElementById('medicalRes').value) || 0);
+        const dream   = Math.max(0, parseFloat(document.getElementById('dreamFund').value) || 0);
+        const otherN  = Math.max(0, parseFloat(document.getElementById('otherNeed').value) || 0);
         const totalDemandVal = Math.round(mLiving + loan + med + dream + otherN);
         const hasAnnuity = (dataFromStage1.f1 > 0 || dataFromStage1.f2 > 0);
         let laboGov = 0;
@@ -594,9 +717,9 @@
             const onceStr = (dataFromStage1.onceAmt || '').replace(/[^\d]/g, '');
             laboGov = (parseInt(onceStr) || 0) / 10000;
         }
-        const pensionAnnual = dataFromStage1.pensionMonthly * 3 * 4;
+        const pensionAnnual = dataFromStage1.pensionQuarterly * 4;
         const govTotal = laboGov + (pensionAnnual * yearsUntil85 / 10000);
-        const personal = parseFloat(document.getElementById('personalAsset').value) || 0;
+        const personal = Math.max(0, parseFloat(document.getElementById('personalAsset').value) || 0);
         const totalExistingVal = Math.round(govTotal + personal);
         const gapVal = Math.max(0, totalDemandVal - totalExistingVal);
         document.getElementById('totalDemand').innerText = (totalDemandVal || 0).toLocaleString();
@@ -621,18 +744,71 @@
 
     function updateStage3Visuals() {
         if (!stage2Data) return;
-        const need = stage2Data.need || 0;
-        const current = stage2Data.existing || 0;
-        const gap = stage2Data.gap || 0;
-        document.getElementById('cylFinalNeed').innerText = need.toLocaleString();
+        const need     = stage2Data.need     || 0;
+        const current  = stage2Data.existing || 0;
+        const gap      = stage2Data.gap      || 0;
+        const prepY    = stage2Data.prepYears || 0;
+
+        // 基本數據卡片
+        document.getElementById('cylFinalNeed').innerText     = need.toLocaleString();
         document.getElementById('cylFinalExisting').innerText = current.toLocaleString();
-        document.getElementById('cylFinalGap').innerText = gap.toLocaleString();
-        const ratio = need > 0 ? (current / need) : 0;
-        const displayPercent = Math.min(100, Math.round(ratio * 100));
-        document.getElementById('cylPercent').textContent = "達成 " + displayPercent + "%";
-        const waterH = Math.min(260, Math.round(ratio * 260));
-        document.getElementById('cylWater').setAttribute('y', 280 - waterH);
-        document.getElementById('cylWater').setAttribute('height', waterH);
+        document.getElementById('cylFinalGap').innerText      = gap.toLocaleString();
+
+        // 現有達成率（藍色水位）
+        const ratioBefore    = need > 0 ? current / need : 0;
+        const pctBefore      = Math.min(100, Math.round(ratioBefore * 100));
+        const waterHBefore   = Math.min(260, Math.round(ratioBefore * 260));
+        document.getElementById('cylPercent').textContent = '達成 ' + pctBefore + '%';
+        document.getElementById('cylWater').setAttribute('y', 280 - waterHBefore);
+        document.getElementById('cylWater').setAttribute('height', waterHBefore);
+
+        // 預算輸入
+        const budget = Math.max(0, parseInt(document.getElementById('finalBudgetChoice').value) || 0);
+
+        const budgetResult = document.getElementById('budgetResultPanel');
+        const budgetHint   = document.getElementById('budgetHint');
+        const afterCard    = document.getElementById('cylAfterCard');
+        const afterText    = document.getElementById('cylPercentAfter');
+
+        if (budget > 0 && prepY > 0) {
+            // 累積金額：月提撥 × 12個月 × 準備年數，換算成萬
+            const accumulateWan = Math.round((budget * 12 * prepY) / 10000);
+            // 加入計畫後合計
+            const afterTotal    = current + accumulateWan;
+            const ratioAfter    = need > 0 ? afterTotal / need : 0;
+            const pctAfter      = Math.min(100, Math.round(ratioAfter * 100));
+            const delta         = pctAfter - pctBefore;
+
+            // 左側結果卡片
+            document.getElementById('s3PrepYearsDisplay').innerText = prepY;
+            document.getElementById('s3Accumulate').innerText       = accumulateWan.toLocaleString();
+            document.getElementById('s3RatioBefore').innerText      = pctBefore;
+            document.getElementById('s3RatioAfter').innerText       = pctAfter;
+            document.getElementById('s3RatioDelta').innerText       = delta;
+            document.getElementById('s3ProgressBar').style.width    = pctAfter + '%';
+
+            budgetResult.classList.remove('hidden');
+            budgetHint.classList.add('hidden');
+
+            // 右側圓柱：綠色增量水位
+            const waterHAfter  = Math.min(260, Math.round(ratioAfter * 260));
+            const extraH       = Math.max(0, waterHAfter - waterHBefore);
+            const extraY       = 280 - waterHBefore - extraH;
+            document.getElementById('cylWaterExtra').setAttribute('y', extraY);
+            document.getElementById('cylWaterExtra').setAttribute('height', extraH);
+            document.getElementById('cylAfterCard').querySelector('#cylFinalAfter').innerText = afterTotal.toLocaleString();
+            afterCard.classList.remove('hidden');
+            afterText.textContent = '加入後 ' + pctAfter + '%';
+            afterText.setAttribute('opacity', '1');
+
+        } else {
+            // 尚未輸入預算或無準備年數
+            budgetResult.classList.add('hidden');
+            budgetHint.classList.remove('hidden');
+            document.getElementById('cylWaterExtra').setAttribute('height', 0);
+            afterCard.classList.add('hidden');
+            afterText.setAttribute('opacity', '0');
+        }
     }
 
     function setText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
@@ -660,7 +836,7 @@
         }
         setText('rpt-once', dataFromStage1.onceAmt || '--');
         setText('rpt-monthly-pension', dataFromStage1.pensionMonthly ? dataFromStage1.pensionMonthly.toLocaleString() : '--');
-        setText('rpt-quarterly-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly * 3).toLocaleString() : '--');
+        setText('rpt-quarterly-pension', dataFromStage1.pensionQuarterly ? dataFromStage1.pensionQuarterly.toLocaleString() : '--');
         setText('rpt-retire-age-p2', dataFromStage1.claimAge || '--');
         setText('rpt-p2-demand', need.toLocaleString()); setText('rpt-p2-existing', existing.toLocaleString()); setText('rpt-p2-gap', gap.toLocaleString());
         setText('rpt-d-living', stage2Data.living || 0); setText('rpt-d-loan', stage2Data.loan || 0); setText('rpt-d-med', stage2Data.med || 0);
@@ -668,7 +844,7 @@
         const hasAnnuityP = (dataFromStage1.f1 > 0 || dataFromStage1.f2 > 0);
         if (hasAnnuityP) { setText('rpt-e-labo-label','● 勞保年金（月）'); setText('rpt-e-labo', dataFromStage1.laboMonthly ? dataFromStage1.laboMonthly.toLocaleString() : '0'); setText('rpt-e-labo-unit','元／月'); }
         else { setText('rpt-e-labo-label','● 勞保一次給付'); const os = (dataFromStage1.onceAmt||'').replace(/[^\d]/g,''); setText('rpt-e-labo',(parseInt(os)||0).toLocaleString()); setText('rpt-e-labo-unit','元（一次）'); }
-        setText('rpt-e-pension', dataFromStage1.pensionMonthly ? (dataFromStage1.pensionMonthly*3).toLocaleString() : '0');
+        setText('rpt-e-pension', dataFromStage1.pensionQuarterly ? dataFromStage1.pensionQuarterly.toLocaleString() : '0');
         setText('rpt-e-gov-total', (stage2Data.govTotal||0).toLocaleString()); setText('rpt-e-personal', (stage2Data.personal||0).toLocaleString()); setText('rpt-e-total', existing.toLocaleString());
         setText('rpt-progress-pct', pct+'%'); const bar = document.getElementById('rpt-progress-bar'); if(bar) bar.style.width = pct+'%';
         const prepY = stage2Data.prepYears || 0;
