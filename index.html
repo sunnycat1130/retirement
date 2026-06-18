@@ -398,48 +398,6 @@
 
             <p class="text-slate-400 font-bold italic text-sm text-center w-full mt-4">透過合理的提撥預算，我們能填補這段距離，讓未來更安心。</p>
 
-            <!-- 互動結果區（輸入預算後顯示） -->
-            <div id="budgetResultPanel" class="hidden w-full mt-5 space-y-3">
-                <p class="text-sm font-bold text-slate-500 text-center">以您的提撥預算，搭配第二頁設定的 <span id="s3PrepYearsDisplay" class="text-bli-green font-black">??</span> 年準備期</p>
-
-                <!-- 累積總額 -->
-                <div class="bg-white rounded-2xl shadow-md border border-emerald-100 px-5 py-4">
-                    <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-1">預計可累積退休金</p>
-                    <p class="text-3xl font-black text-bli-green"><span id="s3Accumulate">0</span> <span class="text-lg">萬元</span></p>
-                </div>
-
-                <!-- 達成率變化 -->
-                <div class="bg-white rounded-2xl shadow-md border border-amber-100 px-5 py-4">
-                    <p class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-2">退休計畫達成率提升</p>
-                    <div class="flex items-center justify-center gap-3 flex-wrap">
-                        <div class="text-center">
-                            <p class="text-xs text-slate-400 mb-0.5">目前</p>
-                            <p class="text-2xl font-black text-slate-400"><span id="s3RatioBefore">0</span>%</p>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#d33101" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-                        <div class="text-center">
-                            <p class="text-xs text-bli-orange mb-0.5">加入計畫後</p>
-                            <p class="text-2xl font-black text-bli-orange"><span id="s3RatioAfter">0</span>%</p>
-                        </div>
-                        <div class="bg-orange-50 border border-orange-200 rounded-xl px-3 py-1.5 text-center">
-                            <p class="text-xs text-orange-400 mb-0.5">增加</p>
-                            <p class="text-xl font-black text-bli-orange">+<span id="s3RatioDelta">0</span>%</p>
-                        </div>
-                    </div>
-                    <!-- 進度條 -->
-                    <div class="mt-3 bg-slate-100 rounded-full h-3 overflow-hidden">
-                        <div id="s3ProgressBar" class="h-full rounded-full transition-all duration-700"
-                             style="width:0%; background:linear-gradient(90deg,#00847b,#34d399);"></div>
-                    </div>
-                    <div class="flex justify-between mt-1">
-                        <span class="text-[10px] text-slate-400">0%</span>
-                        <span class="text-[10px] text-slate-400">100%</span>
-                    </div>
-                </div>
-
-                <p class="text-base font-black text-bli-orange italic drop-shadow-sm text-center pt-1">幫助您達成目標將是最棒的事情！</p>
-            </div>
-
         </div>
     </div>
 </div>
@@ -732,47 +690,20 @@
 
     function updateStage3Visuals() {
         if (!stage2Data) return;
-        const need     = stage2Data.need     || 0;
-        const current  = stage2Data.existing || 0;
-        const gap      = stage2Data.gap      || 0;
-        const prepY    = stage2Data.prepYears || 0;
+        const need    = stage2Data.need     || 0;
+        const current = stage2Data.existing || 0;
+        const gap     = stage2Data.gap      || 0;
 
-        // 基本數據卡片
         document.getElementById('cylFinalNeed').innerText     = need.toLocaleString();
         document.getElementById('cylFinalExisting').innerText = current.toLocaleString();
         document.getElementById('cylFinalGap').innerText      = gap.toLocaleString();
 
-        // 圓柱水位（現有達成率，固定藍色）
-        const ratioBefore  = need > 0 ? current / need : 0;
-        const pctBefore    = Math.min(100, Math.round(ratioBefore * 100));
-        const waterH       = Math.min(260, Math.round(ratioBefore * 260));
-        document.getElementById('cylPercent').textContent = '達成 ' + pctBefore + '%';
+        const ratio   = need > 0 ? current / need : 0;
+        const pct     = Math.min(100, Math.round(ratio * 100));
+        const waterH  = Math.min(260, Math.round(ratio * 260));
+        document.getElementById('cylPercent').textContent = '達成 ' + pct + '%';
         document.getElementById('cylWater').setAttribute('y', 280 - waterH);
         document.getElementById('cylWater').setAttribute('height', waterH);
-
-        // 預算輸入
-        const budget = Math.max(0, parseInt(document.getElementById('finalBudgetChoice').value) || 0);
-        const budgetResult = document.getElementById('budgetResultPanel');
-
-        if (budget > 0 && prepY > 0) {
-            // 累積金額：月提撥 × 12個月 × 準備年數，換算成萬
-            const accumulateWan = Math.round((budget * 12 * prepY) / 10000);
-            const afterTotal    = current + accumulateWan;
-            const ratioAfter    = need > 0 ? afterTotal / need : 0;
-            const pctAfter      = Math.min(100, Math.round(ratioAfter * 100));
-            const delta         = pctAfter - pctBefore;
-
-            document.getElementById('s3PrepYearsDisplay').innerText = prepY;
-            document.getElementById('s3Accumulate').innerText       = accumulateWan.toLocaleString();
-            document.getElementById('s3RatioBefore').innerText      = pctBefore;
-            document.getElementById('s3RatioAfter').innerText       = pctAfter;
-            document.getElementById('s3RatioDelta').innerText       = delta;
-            document.getElementById('s3ProgressBar').style.width    = pctAfter + '%';
-
-            budgetResult.classList.remove('hidden');
-        } else {
-            budgetResult.classList.add('hidden');
-        }
     }
 
     function setText(id, val) { const el = document.getElementById(id); if (el) el.innerText = val; }
