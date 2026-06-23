@@ -100,7 +100,7 @@
 <div class="main-container rounded shadow-lg overflow-hidden min-h-[600px]">
     <div class="bg-bli-green p-2.5 text-white flex flex-col md:flex-row justify-between items-center md:items-end no-print">
         <h1 class="text-lg font-bold">勞工保險及退休金整合試算與規劃系統</h1>
-        <span class="text-[10px] opacity-70 mt-0.5">※ 本系統試算結果僅供參考，實際領取金額以勞保局正式核定為準。</span>
+        <span class="text-[10px] opacity-70 mt-0.5">※ 本系統為搭配課程教學使用，試算結果僅供參考，實際領取金額以勞保局正式核定為準。</span>
     </div>
     <div class="flex border-b border-gray-200 bg-white shadow-sm relative z-10 no-print">
         <button id="tab1" onclick="switchToStage1()" class="tab-btn active">1. 現狀試算</button>
@@ -175,7 +175,7 @@
                         </div>
                         <!-- 年金兩式 -->
                         <div>
-                            <label class="label-text text-gray-500 mb-1.5 block">2. 可請領老年年金給付（兩式擇優發給，請參考）</label>
+                            <label class="label-text text-gray-500 mb-1.5 block">2. 可請領老年年金給付（兩式擇優發給）<span class="text-red-500 font-bold">　若無顯示試算金額，請輸入0</span></label>
                             <div class="grid grid-cols-2 gap-2 pl-2">
                                 <div>
                                     <label class="label-text text-[10px] text-gray-400">第一式計算金額（元）</label>
@@ -206,17 +206,17 @@
                                 <input type="number" id="manualClaimAge" min="0" placeholder="例：65" class="input-box" oninput="syncManualToStage1()">
                             </div>
                             <div>
-                                <label class="label-text text-gray-400">平均餘命（自動帶入）</label>
-                                <div id="manualLifeDisplay" class="result-box text-gray-600 text-sm" style="min-height:28px;display:flex;align-items:center;padding-left:8px;">--</div>
+                                <label class="label-text text-gray-500">2. 平均餘命（年）</label>
+                                <input type="number" id="manualLifeExp" min="1" placeholder="例：23" class="input-box" oninput="syncManualToStage1()">
                             </div>
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="label-text text-gray-500">2. 月退休金金額（元）</label>
+                                <label class="label-text text-gray-500">3. 月退休金金額（元）</label>
                                 <input type="number" id="manualMonthly" min="0" placeholder="月退金額" class="input-box" oninput="syncManualToStage1()">
                             </div>
                             <div>
-                                <label class="label-text text-gray-500">3. 季發月退休金金額（元）</label>
+                                <label class="label-text text-gray-500">4. 季發月退休金金額（元）</label>
                                 <input type="number" id="manualQuarterly" min="0" placeholder="季發金額" class="input-box" oninput="syncManualToStage1()">
                             </div>
                         </div>
@@ -264,7 +264,7 @@
                     <h3 class="text-base font-black text-red-600 mb-1.5 italic underline underline-offset-4">現有：現在我已經準備了多少？</h3>
                     <ul class="space-y-1.5 font-bold text-slate-700">
                         <li>● <span id="imgLaboLabel">勞保年金每月</span> <span id="imgLaboMonthly" class="text-blue-800 font-black text-base">OOO</span></li>
-                        <li>● 勞退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span></li>
+                        <li>● 勞工退休金每季 <span id="imgPensionQuart" class="text-blue-800 font-black text-base">XXX</span> 元 <span id="imgLifeExpHint" class="text-gray-400 font-normal text-xs"></span></li>
                         <li class="flex items-center justify-between"><span>● 其他已準備 <span class="text-[9px] font-normal block opacity-50">(存款/定存/股票...)</span></span><div class="flex items-center gap-1"><input type="number" id="personalAsset" min="0" oninput="updatePlanningLogic()" placeholder="0" class="w-16 underline-input text-center text-blue-700 text-lg"><span>萬</span></div></li>
                     </ul>
                     <div class="mt-1 pt-1 border-t border-blue-100 font-black flex items-center justify-between text-slate-900">
@@ -544,16 +544,7 @@
     const ex1_life = [23,23,22,21,20,19,19,18,17,16,16,15,14,13,13,12,11,11,10,9,9,8,8,7,6,6];
 
     function syncManualToStage1() {
-        const age = parseInt(document.getElementById('manualClaimAge').value) || 0;
-        const lifeEl = document.getElementById('manualLifeDisplay');
-        if (age >= 60) {
-            const idx = Math.min(age - 60, 25);
-            lifeEl.innerText = ex1_life[idx] + ' 年';
-        } else if (age > 0) {
-            lifeEl.innerText = '（未滿60歲，請手動參考官網）';
-        } else {
-            lifeEl.innerText = '--';
-        }
+        // 預留供未來擴充使用
     }
 
     function applyManualInput() {
@@ -561,6 +552,7 @@
         const f1Raw   = document.getElementById('manualF1').value;
         const f2Raw   = document.getElementById('manualF2').value;
         const ageRaw  = document.getElementById('manualClaimAge').value;
+        const lifeRaw = document.getElementById('manualLifeExp').value;
         const mRaw    = document.getElementById('manualMonthly').value;
         const qRaw    = document.getElementById('manualQuarterly').value;
 
@@ -570,6 +562,7 @@
             { raw: f1Raw,   label: '年金第一式計算金額', id: 'manualF1' },
             { raw: f2Raw,   label: '年金第二式計算金額', id: 'manualF2' },
             { raw: ageRaw,  label: '預計申請年齡',       id: 'manualClaimAge' },
+            { raw: lifeRaw, label: '平均餘命',           id: 'manualLifeExp' },
             { raw: mRaw,    label: '月退休金金額',       id: 'manualMonthly' },
             { raw: qRaw,    label: '季發月退休金金額',   id: 'manualQuarterly' },
         ];
@@ -581,11 +574,12 @@
             }
         }
 
-        const once     = parseInt(onceRaw);
-        const f1       = parseInt(f1Raw);
-        const f2       = parseInt(f2Raw);
-        const claimAge = parseInt(ageRaw);
-        const monthly  = parseInt(mRaw);
+        const once      = parseInt(onceRaw);
+        const f1        = parseInt(f1Raw);
+        const f2        = parseInt(f2Raw);
+        const claimAge  = parseInt(ageRaw);
+        const lifeExp   = parseInt(lifeRaw);
+        const monthly   = parseInt(mRaw);
         const quarterly = parseInt(qRaw);
 
         // 負值檢查
@@ -604,15 +598,17 @@
                 return;
             }
         }
-
-        let lifeExpDisplay = '--';
-        if (claimAge >= 60) { const idx = Math.min(claimAge - 60, 25); lifeExpDisplay = ex1_life[idx] + ' 年'; }
+        if (lifeExp <= 0) {
+            alert('「平均餘命」必須大於 0，請重新填入。');
+            document.getElementById('manualLifeExp').focus();
+            return;
+        }
 
         const betterLabo = Math.max(f1, f2);
         dataFromStage1 = {
             laboMonthly: betterLabo, pensionMonthly: monthly, pensionQuarterly: quarterly, claimAge: claimAge,
             f1: f1, f2: f2, onceAmt: once ? once.toLocaleString() + ' 元' : '--',
-            lifeExp: lifeExpDisplay, seniority: '--', birthYear: 0,
+            lifeExp: lifeExp + ' 年', seniority: '--', birthYear: 0,
             avgSalary60: 0, avgSalary60Insured: 0, avgSalary3y: 0, avgSalary3yInsured: 0,
             fund: 0, claimAgeStr: claimAge + ' 歲'
         };
@@ -634,6 +630,8 @@
             document.getElementById('imgLaboMonthly').innerText = (parseInt(onceStr) || 0).toLocaleString() + ' 元';
         }
         document.getElementById('imgPensionQuart').innerText = (dataFromStage1.pensionQuarterly).toLocaleString();
+        const lifeExpStr = dataFromStage1.lifeExp ? dataFromStage1.lifeExp : '--';
+        document.getElementById('imgLifeExpHint').innerText = '（可領平均餘命 ' + lifeExpStr + '）';
         updatePlanningLogic();
     }
     function switchToStage3() {
