@@ -662,7 +662,8 @@
             laboGov = (parseInt(onceStr) || 0) / 10000;
         }
         const pensionAnnual = dataFromStage1.pensionQuarterly * 4;
-        const govTotal = laboGov + (pensionAnnual * yearsUntil85 / 10000);
+        const lifeExpYears = parseInt(dataFromStage1.lifeExp) || 0;
+        const govTotal = laboGov + (pensionAnnual * lifeExpYears / 10000);
         const personal = Math.max(0, parseFloat(document.getElementById('personalAsset').value) || 0);
         const totalExistingVal = Math.round(govTotal + personal);
         const gapVal = Math.max(0, totalDemandVal - totalExistingVal);
